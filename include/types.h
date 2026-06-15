@@ -6,4 +6,9 @@
 #include <stdbool.h>
 #include "headers.h"
 
+typedef enum {
+	SUCCESS,
+	FAILURE
+} status_t;
+
 #endif
