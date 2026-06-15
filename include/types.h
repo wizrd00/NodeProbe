@@ -4,11 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "stats.h"
+#include "checks.h"
 #include "headers.h"
-
-typedef enum {
-	SUCCESS,
-	FAILURE
-} status_t;
 
 #endif
