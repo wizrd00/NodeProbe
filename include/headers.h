@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define PROTO_ETHERNET 0x0001
+#define PROTO_IPV4 0x0800
+
 typedef struct {
 	uint16_t htype;
 	uint16_t ptype;

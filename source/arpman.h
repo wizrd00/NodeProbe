@@ -16,3 +16,13 @@ status_t arpman_delete_context(arpman_context_t *restrict context)
 	CHECK_NOTEQUAL(close(context->sockfd), -1, ERRCLOS, "close() failed to close socket with fd = %d", context->sockfd);
 	status_t _stat = SUCCESS;
 }
+
+status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip)
+{
+	status_t _stat = SUCCESS;
+	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER();
+	struct pollfd pfd = {
+		.fd = context->sockfd,
+		.events = POLLIN
+	};
+}
