@@ -3,7 +3,9 @@
 
 typedef enum {
 	SUCCESS,
-	FAILURE
+	FAILURE,
+	ERRSOCK,
+	ERRBIND
 } status_t;
 
 #endif

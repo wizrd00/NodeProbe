@@ -3,9 +3,14 @@
 
 #include "types.h"
 #include <stdlib.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <net/ethernet.h>
+#include <linux/if_packet.h>
 
 typedef struct {
-	int sock_fd;
+	int sockfd;
+	int ifindex;
 } arpman_context_t;
 
 status_t arpman_create_context(arpman_context_t *restrict context);
