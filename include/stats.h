@@ -5,7 +5,8 @@ typedef enum {
 	SUCCESS,
 	FAILURE,
 	ERRSOCK,
-	ERRBIND
+	ERRBIND,
+	ERRCLOS
 } status_t;
 
 #endif
