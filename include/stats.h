@@ -4,9 +4,13 @@
 typedef enum {
 	SUCCESS,
 	FAILURE,
+	TIMEOUT,
 	ERRSOCK,
 	ERRBIND,
-	ERRCLOS
+	ERRSEND,
+	ERRRECV,
+	ERRCLOS,
+	ERRPOLL
 } status_t;
 
 #endif

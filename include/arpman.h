@@ -45,9 +45,25 @@
 		}\
 	}
 
+#define ARP_REQUEST_DEFAULT_ADDR() {\
+		.sll_family = AF_PACKET,\
+		.sll_protocol = htons(ETH_P_ARP),\
+		.sll_ifindex = context->ifindex,\
+		.sll_halen = (unsigned char) 6,\
+		.sll_addr = {\
+			(unsigned char) 0,\
+			(unsigned char) 0,\
+			(unsigned char) 0,\
+			(unsigned char) 0,\
+			(unsigned char) 0,\
+			(unsigned char) 0\
+		}\
+	};
+
 typedef struct {
 	int sockfd;
 	int ifindex;
+	int timeout;
 	char ip[4];
 	char mac[6];
 } arpman_context_t;
@@ -55,5 +71,7 @@ typedef struct {
 status_t arpman_create_context(arpman_context_t *restrict context);
 
 status_t arpman_delete_context(arpman_context_t *restrict context);
+
+status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac);
 
 #endif
