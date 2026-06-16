@@ -6,6 +6,7 @@
 #define LOGGING
 #include "logman.h"
 #endif
+#include <unistd.h>
 
 #ifdef LOG_TRACE
 	#define LOGT(...) logging(TRACE, __FILE__, __func__, __VA_ARGS__)

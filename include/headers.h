@@ -19,7 +19,7 @@ typedef struct {
 } arp_inet_header_t;
 
 typedef struct {
-	uint8_t ver_ihl
+	uint8_t ver_ihl;
 	uint8_t tos;
 	uint16_t tlen;
 	uint16_t id;
