@@ -3,6 +3,9 @@
 static status_t check_arp_response(arp_inet_header_t *res, arp_inet_header_t *req)
 {
 	status_t _stat = SUCCESS;
+	bool match = (res->op == htons(ARP_RES)) && (memcmp(res->tha, req->sha, (size_t) 6) == 0) && (memcmp(res->tpa, req->spa, (size_t) 4) == 0) && (memcmp(res->spa, req->tpa, (size_t) 4) == 0);
+	if (!match)
+		_stat = FAILURE;
 	return _stat;
 }
 
