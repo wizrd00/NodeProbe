@@ -34,8 +34,8 @@ typedef struct {
 	int sockfd;
 	int ifindex;
 	int timeout;
-	char ip[4];
-	char mac[6];
+	unsigned char ip[4];
+	unsigned char mac[6];
 } arpman_context_t;
 
 status_t arpman_create_context(arpman_context_t *restrict context);

@@ -41,7 +41,7 @@ static int map_logfile(void)
 	return 0;
 }
 
-int logman_create_context(const *path, size_t count)
+int logman_create_context(const char *path, size_t count)
 {
 	logc.size = count * sizeof(logman_msg_t);
 	if (create_logfile(path) == -1)
