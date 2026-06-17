@@ -2,7 +2,6 @@
 #define NODEPROBE_ARPMAN_H
 
 #include "types.h"
-#include <stdlib.h>
 #include <string.h>
 #include <poll.h>
 #include <sys/socket.h>

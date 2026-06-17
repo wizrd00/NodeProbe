@@ -33,6 +33,14 @@ typedef struct {
 } ipv4_header_t;
 
 typedef struct {
+	uint8_t type;
+	uint8_t code;
+	uint16_t chksum;
+	uint16_t id;
+	uint16_t seq;
+} icmpv4_echo_header_t;
+
+typedef struct {
 	uint16_t src_port;
 	uint16_t dst_port;
 	uint32_t seq;
