@@ -44,12 +44,12 @@ status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip, uin
 	while (1) {
 		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
 		case -1 :
-			CHECK_STAT(FAILURE, ERRPOLL, "poll() failed; %s", strerror(errno));
+			CHECK_STAT(ERRPOLL, "poll() failed; %s", strerror(errno));
 		case 0 :
-			CHECK_STAT(FAILURE, TIMEOUT, "poll() timeout after %d ms", context->timeout);
+			CHECK_STAT(TIMEOUT, "poll() timeout after %d ms", context->timeout);
 		case 1 :
 			if (pfd.revents != POLLIN)
-				CHECK_STAT(FAILURE, ERRPOLL, "poll() failed and pfd.revents = %d", pfd.revents);
+				CHECK_STAT(ERRPOLL, "poll() failed and pfd.revents = %d", pfd.revents);
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) &res_header, sizeof(arp_inet_header_t), 0, NULL, NULL);
 		CHECK_NOTEQUAL(recvfrom_ret, (ssize_t) -1, ERRRECV, "recvfrom() failed to receive ARP response on socket with fd = %d; %s", context->sockfd, strerror(errno));

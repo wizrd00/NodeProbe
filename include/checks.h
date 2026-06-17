@@ -3,7 +3,6 @@
 
 #include "stats.h"
 #if defined(LOG_TRACE) || defined(LOG_DEBUG) || defined(LOG_WARNN) || defined(LOG_ERROR)
-#define LOGGING
 #include "logman.h"
 #endif
 #include <unistd.h>
