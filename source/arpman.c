@@ -58,6 +58,7 @@ status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip, uin
 		CHECK_NOTEQUAL(recvfrom_ret, (ssize_t) -1, ERRRECV, "recvfrom() failed to receive ARP response on socket with fd = %d; %s", context->sockfd, strerror(errno));
 		if (check_arp_response(&res_header, &req_header) == SUCCESS)
 			break;
+		LOGW("The received datagram is invalid");
 	}
 	memcpy(mac, res_header.sha, (size_t) 6);
 	return _stat;
