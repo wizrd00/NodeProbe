@@ -15,8 +15,10 @@ void test_arpman_create_context(void)
 	arpman_context_t context = {
 		.ifindex = 1,
 		.timeout = 1000,
-		.ip = {127, 0, 0, 1},
-		.mac = {204, 71, 64, 252, 123, 5}
+		.src_ip = {127, 0, 0, 1},
+		.src_mac = {204, 71, 64, 252, 123, 5},
+		.out_mac = {0, 0, 0, 0, 0, 0}
+
 	};
 	_stat = arpman_create_context(&context);
 	if (errno)
@@ -38,8 +40,9 @@ void test_arpman_request_mac0(void)
 		.sockfd = 3, // value 3 as fd makes the fake recvfrom() and fake poll() to work fine
 		.ifindex = 0,
 		.timeout = 1000,
-		.ip = {127, 0, 0, 1},
-		.mac = {255, 255, 255, 255, 255, 255}
+		.src_ip = {127, 0, 0, 1},
+		.src_mac = {255, 255, 255, 255, 255, 255},
+		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
 	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(SUCCESS, _stat);
@@ -55,8 +58,9 @@ void test_arpman_request_mac1(void)
 		.sockfd = 2, // value 3 as fd makes the fake recvfrom() and fake poll() to work fine
 		.ifindex = 0,
 		.timeout = 1000,
-		.ip = {127, 0, 0, 1},
-		.mac = {255, 255, 255, 255, 255, 255}
+		.src_ip = {127, 0, 0, 1},
+		.src_mac = {255, 255, 255, 255, 255, 255},
+		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
 	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(ERRRECV, _stat);
@@ -72,8 +76,9 @@ void test_arpman_request_mac2(void)
 		.sockfd = 4, // value 3 as fd makes the fake recvfrom() and fake poll() to work fine
 		.ifindex = 0,
 		.timeout = 1000,
-		.ip = {127, 0, 0, 1},
-		.mac = {255, 255, 255, 255, 255, 255}
+		.src_ip = {127, 0, 0, 1},
+		.src_mac = {255, 255, 255, 255, 255, 255},
+		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
 	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(TIMEOUT, _stat);
@@ -89,8 +94,9 @@ void test_arpman_request_mac3(void)
 		.sockfd = 5, // value 3 as fd makes the fake recvfrom() and fake poll() to work fine
 		.ifindex = 0,
 		.timeout = 1000,
-		.ip = {127, 0, 0, 1},
-		.mac = {255, 255, 255, 255, 255, 255}
+		.src_ip = {127, 0, 0, 1},
+		.src_mac = {255, 255, 255, 255, 255, 255},
+		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
 	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(ERRPOLL, _stat);

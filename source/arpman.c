@@ -14,7 +14,7 @@ status_t arpman_create_context(arpman_context_t *restrict context)
 		.sll_protocol = htons(ETH_P_ARP),
 		.sll_ifindex = context->ifindex
 	};
-	int tmp_sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP));
+	int tmp_sockfd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ARP));
 	CHECK_NOTEQUAL(tmp_sockfd, -1, ERRSOCK, "socket() failed to create socket; %s", strerror(errno));
 	CHECK_NOTEQUAL_CLOSE(bind(tmp_sockfd, (struct sockaddr *) &addr, sizeof(struct sockaddr_ll)), -1, ERRBIND, tmp_sockfd, "bind() failed to bind to socket with fd = %d; %s", tmp_sockfd, strerror(errno));
 	context->sockfd = tmp_sockfd;

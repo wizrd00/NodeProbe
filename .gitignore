@@ -1,7 +1,8 @@
 *.swp
 *.o
 *.bin
+*.elf
+logfile*
 build/
 binary/
 tmp/
-*.elf
