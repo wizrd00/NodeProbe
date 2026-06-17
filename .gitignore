@@ -4,3 +4,4 @@
 build/
 binary/
 tmp/
+*.elf
