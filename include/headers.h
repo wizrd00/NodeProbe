@@ -4,7 +4,14 @@
 #include <stdint.h>
 
 #define PROTO_ETHERNET 0x0001
+#define PROTO_ARP 0x0806
 #define PROTO_IPV4 0x0800
+
+typedef struct {
+	uint8_t dst_addr[6];
+	uint8_t src_addr[6];
+	uint16_t len;
+} ethernet_header_t;
 
 typedef struct {
 	uint16_t htype;
