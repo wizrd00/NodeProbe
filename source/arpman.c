@@ -31,7 +31,7 @@ status_t arpman_delete_context(arpman_context_t *restrict context)
 	return _stat;
 }
 
-status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac)
+status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac)
 {
 	status_t _stat = SUCCESS;
 	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER();

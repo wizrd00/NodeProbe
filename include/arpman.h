@@ -46,6 +46,6 @@ status_t arpman_create_context(arpman_context_t *restrict context);
 
 status_t arpman_delete_context(arpman_context_t *restrict context);
 
-status_t arpman_request_mac(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac);
+status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac);
 
 #endif

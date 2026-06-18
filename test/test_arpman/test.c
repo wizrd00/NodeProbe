@@ -31,7 +31,7 @@ void test_arpman_create_context(void)
 	return;
 }
 
-void test_arpman_request_mac0(void)
+void test_arpman_mac_request0(void)
 {
 	// All functions in this test supposed to work fine
 	status_t _stat = SUCCESS;
@@ -44,12 +44,12 @@ void test_arpman_request_mac0(void)
 		.src_mac = {255, 255, 255, 255, 255, 255},
 		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
-	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
+	_stat = arpman_mac_request(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(SUCCESS, _stat);
 	return;
 }
 
-void test_arpman_request_mac1(void)
+void test_arpman_mac_request1(void)
 {
 	// In this test fake poll() must work fine but the fake recvfrom() must fail and I expect ERRRECV
 	status_t _stat = SUCCESS;
@@ -62,12 +62,12 @@ void test_arpman_request_mac1(void)
 		.src_mac = {255, 255, 255, 255, 255, 255},
 		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
-	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
+	_stat = arpman_mac_request(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(ERRRECV, _stat);
 	return;
 }
 
-void test_arpman_request_mac2(void)
+void test_arpman_mac_request2(void)
 {
 	// In this test the fake recvfrom() must work fine and the fake poll() must timeout. I expect TIMEOUT
 	status_t _stat = SUCCESS;
@@ -80,12 +80,12 @@ void test_arpman_request_mac2(void)
 		.src_mac = {255, 255, 255, 255, 255, 255},
 		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
-	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
+	_stat = arpman_mac_request(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(TIMEOUT, _stat);
 	return;
 }
 
-void test_arpman_request_mac3(void)
+void test_arpman_mac_request3(void)
 {
 	// In this test the fake recvfrom() must work fine and the fake poll() must fail. I expect ERRPOLL
 	status_t _stat = SUCCESS;
@@ -98,7 +98,7 @@ void test_arpman_request_mac3(void)
 		.src_mac = {255, 255, 255, 255, 255, 255},
 		.out_mac = {0, 0, 0, 0, 0, 0}
 	};
-	_stat = arpman_request_mac(&context, (uint32_t) 0, new_mac); // the two last args don't matter
+	_stat = arpman_mac_request(&context, (uint32_t) 0, new_mac); // the two last args don't matter
 	TEST_ASSERT_EQUAL(ERRPOLL, _stat);
 	return;
 }
@@ -108,9 +108,9 @@ int main(void)
 {
 	UNITY_BEGIN();
 	RUN_TEST(test_arpman_create_context);
-	RUN_TEST(test_arpman_request_mac0);
-	RUN_TEST(test_arpman_request_mac1);
-	RUN_TEST(test_arpman_request_mac2);
-	RUN_TEST(test_arpman_request_mac3);
+	RUN_TEST(test_arpman_mac_request0);
+	RUN_TEST(test_arpman_mac_request1);
+	RUN_TEST(test_arpman_mac_request2);
+	RUN_TEST(test_arpman_mac_request3);
 	return UNITY_END();
 }

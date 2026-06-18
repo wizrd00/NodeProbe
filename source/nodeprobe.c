@@ -26,7 +26,7 @@ int main(int argc, char **args)
 		printf("arpman_create_context() failed\n");
 		return 1;
 	}
-	if (arpman_request_mac(&context, ip, mac) != SUCCESS) {
+	if (arpman_mac_request(&context, ip, mac) != SUCCESS) {
 		printf("arpman_request_mac() failed\n");
 		return 1;
 	} else {
