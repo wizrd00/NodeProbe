@@ -6,6 +6,7 @@
 #define PROTO_ETHERNET 0x0001
 #define PROTO_ARP 0x0806
 #define PROTO_IPV4 0x0800
+#define PROTO_ICMPV4 0x0001
 
 typedef struct {
 	uint8_t dst_addr[6];

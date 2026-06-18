@@ -43,7 +43,7 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uin
 	};
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) &req_header, sizeof(arp_inet_header_t), 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL(sendto_ret, (ssize_t) -1, ERRSEND, "sendto() failed to send ARP request on socket with fd = %d; %s", context->sockfd, strerror(errno));
-	CHECK_EQUAL((size_t) sendto_ret, sizeof(arp_inet_header_t), ERRSEND, "sendto() failed and sent %zd bytes instead of %zd bytes", (size_t) sendto_ret, sizeof(arp_inet_header_t));
+	CHECK_EQUAL((size_t) sendto_ret, sizeof(arp_inet_header_t), ERRSEND, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, sizeof(arp_inet_header_t));
 	while (1) {
 		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
 		case -1 :
