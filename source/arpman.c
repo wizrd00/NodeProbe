@@ -36,7 +36,6 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uin
 	status_t _stat = SUCCESS;
 	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER();
 	struct sockaddr_ll req_addr = ARP_REQUEST_DEFAULT_ADDR();
-	size_t res_addr_size = sizeof(struct sockaddr_ll);
 	struct pollfd pfd = {
 		.fd = context->sockfd,
 		.events = POLLIN
@@ -51,14 +50,14 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uin
 		case 0 :
 			CHECK_STAT(TIMEOUT, "poll() timeout after %d ms", context->timeout);
 		case 1 :
-			if (pfd.revents != POLLIN)
+			if ((pfd.revents & POLLIN) != POLLIN)
 				CHECK_STAT(ERRPOLL, "poll() failed and pfd.revents = %d", pfd.revents);
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) &res_header, sizeof(arp_inet_header_t), 0, NULL, NULL);
 		CHECK_NOTEQUAL(recvfrom_ret, (ssize_t) -1, ERRRECV, "recvfrom() failed to receive ARP response on socket with fd = %d; %s", context->sockfd, strerror(errno));
 		if (check_arp_response(&res_header, &req_header) == SUCCESS)
 			break;
-		LOGW("The received datagram is invalid");
+		LOGW("The received datagram is invalid, trying again...");
 	}
 	memcpy(mac, res_header.sha, (size_t) 6);
 	return _stat;

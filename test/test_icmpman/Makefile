@@ -19,11 +19,11 @@ endif
 TEST_SRC := test.c
 TEST_OBJ := $(BUILD_DIR)/test.o
 
-REAL_ARPMAN_SRC := ../../source/arpman.c
-FAKE_ARPMAN_SRC := fake/fake_arpman.c
-REAL_ARPMAN_HDR := ../../include/arpman.h
-FAKE_ARPMAN_HDR := fake/fake_arpman.h
-ARPMAN_OBJ := $(BUILD_DIR)/arpman.o
+REAL_ICMPMAN_SRC := ../../source/icmpman.c
+FAKE_ICMPMAN_SRC := fake/fake_icmpman.c
+REAL_ICMPMAN_HDR := ../../include/icmpman.h
+FAKE_ICMPMAN_HDR := fake/fake_icmpman.h
+ICMPMAN_OBJ := $(BUILD_DIR)/icmpman.o
 
 FAKE_SOCKET_SRC := fake/fake_socket.c
 FAKE_SOCKET_OBJ := $(BUILD_DIR)/fake_socket.o
@@ -31,7 +31,7 @@ FAKE_SOCKET_OBJ := $(BUILD_DIR)/fake_socket.o
 FAKE_POLL_SRC := fake/fake_poll.c
 FAKE_POLL_OBJ := $(BUILD_DIR)/fake_poll.o
 
-test.elf : $(ARPMAN_OBJ) $(FAKE_SOCKET_OBJ) $(FAKE_POLL_OBJ) $(TEST_OBJ)
+test.elf : $(ICMPMAN_OBJ) $(FAKE_SOCKET_OBJ) $(FAKE_POLL_OBJ) $(TEST_OBJ)
 	@echo linking object files $^
 	$(CC) $(CFLAGS) $(UNITY_LIB_FLAGS) -o $@ $^
 
@@ -39,14 +39,14 @@ $(TEST_OBJ) : $(TEST_SRC)
 	@echo compiling $^
 	$(CC) -c $(CFLAGS) -I$(FAKE_DIR) -I$(UNITY_DIR) -I$(INCLUDE_DIR) -o $@ $^
 
-$(ARPMAN_OBJ) : $(FAKE_ARPMAN_SRC) $(FAKE_ARPMAN_HDR)
+$(ICMPMAN_OBJ) : $(FAKE_ICMPMAN_SRC) $(FAKE_ICMPMAN_HDR)
 	@echo compiling $<
 	$(CC) -c $(CFLAGS) -I$(FAKE_DIR) -I$(INCLUDE_DIR) -o $@ $<
 
-$(FAKE_ARPMAN_SRC) : $(REAL_ARPMAN_SRC)
+$(FAKE_ICMPMAN_SRC) : $(REAL_ICMPMAN_SRC)
 	@cp $< $@
 
-$(FAKE_ARPMAN_HDR) : $(REAL_ARPMAN_HDR)
+$(FAKE_ICMPMAN_HDR) : $(REAL_ICMPMAN_HDR)
 	@cp $< $@
 	@sed -e "s/include <poll\.h>/include <fake_poll.h>/" -e "s/include <sys\/socket\.h>/include <fake_socket\.h>/" $< > $@
 

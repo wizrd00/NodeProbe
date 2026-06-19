@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <poll.h>
-#include <sys/socket.h>
+#include <fake_poll.h>
+#include <fake_socket.h>
 #include <arpa/inet.h>
 #include <net/ethernet.h>
 #include <linux/if_packet.h>

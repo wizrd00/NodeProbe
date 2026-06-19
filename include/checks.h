@@ -5,6 +5,7 @@
 #if defined(LOG_TRACE) || defined(LOG_DEBUG) || defined(LOG_WARNN) || defined(LOG_ERROR)
 #include "logman.h"
 #endif
+#include <stdlib.h>
 #include <unistd.h>
 
 #ifdef LOG_TRACE

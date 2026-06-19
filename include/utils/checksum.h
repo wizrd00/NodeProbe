@@ -5,6 +5,18 @@
 #include <stdint.h>
 
 static inline uint16_t checksum(uint8_t *data, size_t size)
-{}
+{
+	uint16_t chksum = 0;
+	uint64_t tmp = 0;
+	for (size_t i = 0; i < size / 2; i++)
+		tmp += (data[i * 2] << 8) + data[i * 2 + 1];
+	if (size % 2 != 0)
+		tmp += data[size - 1] << 8;
+	while (tmp > 0) {
+		chksum += (tmp & 0xffff);
+		tmp >>= 16;
+	}
+	return (~chksum);
+}
 
 #endif
