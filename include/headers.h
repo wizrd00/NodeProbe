@@ -11,7 +11,7 @@
 typedef struct {
 	uint8_t dst_addr[6];
 	uint8_t src_addr[6];
-	uint16_t len;
+	uint16_t type;
 } ethernet_header_t;
 
 typedef struct {

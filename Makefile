@@ -48,7 +48,7 @@ $(NODEPROBE) : $(BIN_DIR) $(OBJ_FILES) $(HDR_FILES)
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[96mlinking modules into" $@ "\e[0m"
 	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES) $(LIB_FLAGS)
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[93mstrip" $@ "\e[0m"
-	@strip $@
+	#@strip $@
 
 $(BIN_DIR) :
 	@mkdir -p $(BIN_DIR)

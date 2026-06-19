@@ -4,8 +4,9 @@
 #include "types.h"
 #include "logman.h"
 #include "arpman.h"
+#include "icmpman.h"
 #include <arpa/inet.h>
 
-int main(int argc, char **args);
+int main(int argc, char **argv);
 
 #endif
