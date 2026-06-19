@@ -57,6 +57,10 @@ $(BIN_DIR)/%.o : $(SRC_DIR)/%.c $(INC_DIR)/%.h
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[93mcompiling module" $< "\e[0m"
 	$(CC) -c $(CFLAGS) $(LIB_FLAGS) $(INCLUDE_FLAGS) -o $@ $<
 
+memcheck : $(NODEPROBE)
+	@echo start checking test.elf for any memory bug
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./$^
+
 clean :
 	rm $(wildcard $(BIN_DIR)/*.o)
 	if [ -f $(NODEPROBE) ]; then rm $(NODEPROBE); fi;
