@@ -10,7 +10,8 @@ ifeq ($(CC), pcc)
 CFLAGS := -std=c99 -O3 -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread
 UNITY_LIB_FLAGS := -Wl,--library-path=$(LIB_DIR),--library=unity-musl,-rpath=$(LIB_DIR)
 else ifeq ($(CC), gcc)
-CFLAGS := -std=gnu99 -O3 -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread
+SPECIAL_OPTS := -DARPHRD_ETHER=1
+CFLAGS := -std=gnu99 -O3 -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(SPECIAL_OPTS)
 UNITY_LIB_FLAGS := -L$(LIB_DIR) -lunity-glibc -Wl,-rpath=$(LIB_DIR)
 else
 $(error unsupported compiler : $(CC))
@@ -33,7 +34,7 @@ FAKE_POLL_OBJ := $(BUILD_DIR)/fake_poll.o
 
 test.elf : $(ARPMAN_OBJ) $(FAKE_SOCKET_OBJ) $(FAKE_POLL_OBJ) $(TEST_OBJ)
 	@echo linking object files $^
-	$(CC) $(CFLAGS) $(UNITY_LIB_FLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(UNITY_LIB_FLAGS)
 
 $(TEST_OBJ) : $(TEST_SRC)
 	@echo compiling $^

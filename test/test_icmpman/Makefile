@@ -33,7 +33,7 @@ FAKE_POLL_OBJ := $(BUILD_DIR)/fake_poll.o
 
 test.elf : $(ICMPMAN_OBJ) $(FAKE_SOCKET_OBJ) $(FAKE_POLL_OBJ) $(TEST_OBJ)
 	@echo linking object files $^
-	$(CC) $(CFLAGS) $(UNITY_LIB_FLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(UNITY_LIB_FLAGS)
 
 $(TEST_OBJ) : $(TEST_SRC)
 	@echo compiling $^

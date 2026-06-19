@@ -29,7 +29,7 @@
 	.ttl = (uint8_t) 0x40,\
 	.proto = (uint8_t) PROTO_ICMPV4,\
 	.chksum = (uint16_t) 0,\
-	.src_addr = {(uint8_t) context->src_ip[0], (uint8_t) context->src_ip[1], (uint8_t) context->src_ip[2], (uint8_t) context->src_ip[3]},\
+	.src_addr = (uint32_t) context->src_ip[0] << 24 | (uint32_t) context->src_ip[1] << 16 | (uint32_t) context->src_ip[2] << 8 | (uint32_t) context->src_ip[3],\
 	.dst_addr = ip\
 }
 

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 ssize_t sendto(int sockfd, const void *buf, size_t size, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
 

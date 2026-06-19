@@ -14,8 +14,8 @@ ssize_t recvfrom(int sockfd, void *buf, size_t size, int flags, struct sockaddr 
 {
 	printf("Enter fake recvfrom() -> ");
 	arp_inet_header_t res = {
-		.htype = 1,
-		.ptype = 0x800,
+		.htype = htons(1),
+		.ptype = htons(0x800),
 		.hlen = 6,
 		.plen = 4
 	};
@@ -27,7 +27,7 @@ ssize_t recvfrom(int sockfd, void *buf, size_t size, int flags, struct sockaddr 
 		printf("DONE\n");
 		return (ssize_t) -1;
 	default :
-		res.op = 2;
+		res.op = htons(2);
 		res.sha[0] = 0x12;
 		res.sha[1] = 0x23;
 		res.sha[2] = 0x34;
@@ -49,8 +49,8 @@ ssize_t recvfrom(int sockfd, void *buf, size_t size, int flags, struct sockaddr 
 
 		res.tpa[0] = header->spa[0];
 		res.tpa[1] = header->spa[1];
-		res.tpa[2] = header->tpa[2];
-		res.tpa[3] = header->tpa[3];
+		res.tpa[2] = header->spa[2];
+		res.tpa[3] = header->spa[3];
 
 		memcpy(buf, (void *) &res, size);
 		printf("DONE\n");

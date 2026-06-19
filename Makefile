@@ -25,7 +25,8 @@ else
 LIB_FLAGS := -Wl,--library-path=$(LIB_DIR),-rpath=$(LIB_DIR)
 endif
 else ifeq ($(CC), gcc)
-CFLAGS := -std=gnu99 -O3 -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(LOGMAN_MACROS)
+SPECIAL_OPTS = -DARPHRD_ETHER=1
+CFLAGS := -std=gnu99 -O3 -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(LOGMAN_MACROS) $(SPECIAL_OPTS)
 ifeq ($(wildcard $(LIB_DIR)/*), $())
 LIG_FLAGS :=
 else

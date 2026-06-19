@@ -22,7 +22,7 @@ CHECKSUM_HDR := ../../include/utils/checksum.h
 
 test.elf : $(TEST_OBJ) $(CHECKSUM_HDR)
 	@echo linking object files $^
-	$(CC) $(CFLAGS) $(UNITY_LIB_FLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(UNITY_LIB_FLAGS)
 
 $(TEST_OBJ) : $(TEST_SRC)
 	@echo compiling $^
