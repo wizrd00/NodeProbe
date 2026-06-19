@@ -17,19 +17,19 @@
 #define ETHERNET_DEFAULT_HEADER() {\
 	.dst_addr = {(uint8_t) context->out_mac[0], (uint8_t) context->out_mac[1], (uint8_t) context->out_mac[2], (uint8_t) context->out_mac[3], (uint8_t) context->out_mac[4], (uint8_t) context->out_mac[5]},\
 	.src_addr = {(uint8_t) context->src_mac[0], (uint8_t) context->src_mac[1], (uint8_t) context->src_mac[2], (uint8_t) context->src_mac[3], (uint8_t) context->src_mac[4], (uint8_t) context->src_mac[5]},\
-	.len = (uint16_t) FRAME_SIZE\
+	.type = htons(PROTO_IPV4) \
 }
 
 #define IPV4_DEFAULT_HEADER() {\
 	.ver_ihl = ((uint8_t) 4 << 4) | ((uint8_t) 5),\
 	.tos = (uint8_t) 0,\
-	.tlen = (uint16_t) FRAME_SIZE - sizeof(ethernet_header_t),\
-	.id = (uint16_t) context->id,\
-	.flag_frag = (uint16_t) 0x4000,\
+	.tlen = htons(FRAME_SIZE - sizeof(ethernet_header_t)),\
+	.id = htons(context->id),\
+	.flag_frag = htons(0x4000),\
 	.ttl = (uint8_t) 0x40,\
 	.proto = (uint8_t) PROTO_ICMPV4,\
 	.chksum = (uint16_t) 0,\
-	.src_addr = (uint32_t) context->src_ip[0] << 24 | (uint32_t) context->src_ip[1] << 16 | (uint32_t) context->src_ip[2] << 8 | (uint32_t) context->src_ip[3],\
+	.src_addr = (uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24,\
 	.dst_addr = ip\
 }
 
@@ -37,7 +37,7 @@
 	.type = (uint8_t) 8,\
 	.code = (uint8_t) 0,\
 	.chksum = (uint16_t) 0,\
-	.id = (uint16_t) context->id,\
+	.id = htons(context->id),\
 	.seq = (uint16_t) 0\
 }
 

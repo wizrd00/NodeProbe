@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 		.timeout = 20000,
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
 		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
-		.out_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134}
+		.out_mac = {(unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255}
 
 	};
 	uint32_t ip;
@@ -44,12 +44,12 @@ int main(int argc, char **argv)
 	// ---------------------------
 	icmpman_context_t context = {
 		.ifindex = 3,
-		.timeout = 20000,
+		.timeout = 2000,
 		.id = (unsigned short) 1337,
 		.mtu_size = 1500,
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
 		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
-		.out_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134}
+		.out_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134} // the resolved MAC address from arpman module
 	};
 	uint32_t ip;
 	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
@@ -65,6 +65,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	icmpman_delete_context(&context);
+	// ----------------------------------
+	// END OF REAL TEST OF ICMPMAN MODULE
 	logman_delete_context();
 	return 0;
 }

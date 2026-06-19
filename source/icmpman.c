@@ -53,8 +53,8 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context, uint32_t ip)
 		.fd = context->sockfd,
 		.events = POLLIN
 	};
-	req_ip_header.chksum = calc_ipv4_checksum(&req_ip_header);
-	req_icmp_header.chksum = calc_icmpv4_checksum(&req_icmp_header);
+	req_ip_header.chksum = htons(calc_ipv4_checksum(&req_ip_header));
+	req_icmp_header.chksum = htons(calc_icmpv4_checksum(&req_icmp_header));
 	memcpy((void *) frame, (void *) &req_eth_header, sizeof(ethernet_header_t));
 	offset += sizeof(ethernet_header_t);
 	memcpy((void *) (frame + offset), (void *) &req_ip_header, sizeof(ipv4_header_t));
@@ -76,9 +76,10 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context, uint32_t ip)
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed to receive ICMPv4 echo response on socket with fd = %d; %s", context->sockfd, strerror(errno));
 		CHECK_EQUAL_FREE((size_t) recvfrom_ret, FRAME_SIZE, ERRRECV, buffer, "size of the received frame is %zu instead of %zu", (size_t) recvfrom, FRAME_SIZE);
-		if (check_echo_response(&res_eth_header, &req_eth_header, &res_ip_header, &req_ip_header, &res_icmp_header, &req_icmp_header) != SUCCESS)
+		if (check_echo_response(&res_eth_header, &req_eth_header, &res_ip_header, &req_ip_header, &res_icmp_header, &req_icmp_header) == SUCCESS)
 			break;
 		LOGW("the received frame is invalid, trying again...");
 	}
+	free((void *) buffer);
 	return _stat;
 }
