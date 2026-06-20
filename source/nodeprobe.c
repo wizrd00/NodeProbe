@@ -12,25 +12,26 @@ int main(int argc, char **argv)
 
 	// REAL TEST OF ARPMAN MODULE
 	// --------------------------
-	/* arpman_context_t context = {
-		.ifindex = 3,
-		.timeout = 20000,
-		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
-		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
-		.out_mac = {(unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255}
-
-	};
-	uint32_t ip;
+	/* uint32_t ip;
 	uint8_t mac[6];
 	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
 		fprintf(stderr, "inet_pton() failed\n");
 		return 1;
 	}
+	arpman_context_t context = {
+		.ifindex = 3,
+		.timeout = 20000,
+		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
+		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
+		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
+		.out_mac = {(unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255, (unsigned char) 255}
+
+	};
 	if (arpman_create_context(&context) != SUCCESS) {
 		fprintf(stderr, "arpman_create_context() failed\n");
 		return 1;
 	}
-	if ((_stat = arpman_mac_request(&context, ip, mac)) != SUCCESS) {
+	if ((_stat = arpman_mac_request(&context, mac)) != SUCCESS) {
 		fprintf(stderr, "arpman_request_mac() failed with status = %d\n", _stat);
 		return 1;
 	} else {
@@ -42,26 +43,27 @@ int main(int argc, char **argv)
 
 	// REAL TEST OF ICMPMAN MODULE
 	// ---------------------------
-	/* icmpman_context_t context = {
+	/* uint32_t ip;
+	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
+		fprintf(stderr, "inet_pton() failed\n");
+		return 1;
+	}
+	icmpman_context_t context = {
 		.ifindex = 3,
 		.timeout = 2000,
 		.id = (unsigned short) 1337,
 		.mtu_size = 1500,
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
+		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
 		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
-		.out_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134} // the resolved MAC address from arpman module
+		.dst_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134} // the resolved MAC address from arpman module
 		// .out_mac = {(unsigned char) 162, (unsigned char) 37, (unsigned char) 206, (unsigned char) 23, (unsigned char) 231, (unsigned char) 167}
 	};
-	uint32_t ip;
-	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
-		fprintf(stderr, "inet_pton() failed\n");
-		return 1;
-	}
 	if (icmpman_create_context(&context) != SUCCESS) {
 		fprintf(stderr, "icmpman_create_context() failed");
 		return 1;
 	}
-	if ((_stat = icmpman_echo_request(&context, ip)) != SUCCESS) {
+	if ((_stat = icmpman_echo_request(&context)) != SUCCESS) {
 		fprintf(stderr, "icmpman_echo_request() failed with status = %d", _stat);
 		return 1;
 	}
