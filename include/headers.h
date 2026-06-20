@@ -8,6 +8,60 @@
 #define PROTO_IPV4 0x0800
 #define PROTO_ICMPV4 0x0001
 
+#define ARP_REQ 1
+#define ARP_RES 2
+
+#define ETHERNET_DEFAULT_HEADER(_src_mac, _dst_mac) {\
+	.dst_addr = {(uint8_t) _dst_mac[0], (uint8_t) _dst_mac[1], (uint8_t) _dst_mac[2], (uint8_t) _dst_mac[3], (uint8_t) _dst_mac[4], (uint8_t) _dst_mac[5]},\
+	.src_addr = {(uint8_t) _src_mac[0], (uint8_t) _src_mac[1], (uint8_t) _src_mac[2], (uint8_t) _src_mac[3], (uint8_t) _src_mac[4], (uint8_t) _src_mac[5]},\
+	.type = htons((uint16_t) PROTO_IPV4) \
+}
+
+#define ARP_REQUEST_DEFAULT_HEADER(_src_mac, _src_ip, _dst_ip) {\
+		.htype = htons(PROTO_ETHERNET),\
+		.ptype = htons(PROTO_IPV4),\
+		.hlen = (uint8_t) 6,\
+		.plen = (uint8_t) 4,\
+		.op = htons(ARP_REQ),\
+		.sha = {(uint8_t) _src_mac[0], (uint8_t) _src_mac[1], (uint8_t) _src_mac[2], (uint8_t) _src_mac[3], (uint8_t) _src_mac[4], (uint8_t) _src_mac[5]},\
+		.spa = {(uint8_t) _src_ip[0], (uint8_t) _src_ip[1], (uint8_t) _src_ip[2], (uint8_t) _src_ip[3]},\
+		.tha = {(uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0},\
+		.tpa = {(uint8_t) _dst_ip[0], (uint8_t) _dst_ip[1], (uint8_t) _dst_ip[2], (uint8_t) _dst_ip[3]}\
+}
+
+#define IPV4_DEFAULT_HEADER(_id, _len, _src_ip, _dst_ip) {\
+	.ver_ihl = ((uint8_t) 4 << 4) | ((uint8_t) 5),\
+	.tos = (uint8_t) 0,\
+	.tlen = htons((uint16_t) _len),\
+	.id = htons((uint16_t) _id),\
+	.flag_frag = htons((uint16_t) 0x4000),\
+	.ttl = (uint8_t) 0x40,\
+	.proto = (uint8_t) PROTO_ICMPV4,\
+	.chksum = (uint16_t) 0,\
+	.src_addr = _src_ip,\
+	.dst_addr = _dst_ip\
+}
+
+#define ICMPV4_ECHO_DEFAULT_HEADER(_id) {\
+	.type = (uint8_t) 8,\
+	.code = (uint8_t) 0,\
+	.chksum = (uint16_t) 0,\
+	.id = htons((uint16_t) _id),\
+	.seq = (uint16_t) 0\
+}
+
+#define TCP_SYNC_DEFAULT_HEADER(_src_port, _dst_port) {\
+	.src_port = (uint16_t) _src_port,\
+	.dst_port = (uint16_t) _dst_port,\
+	.seq = htonl((uint32_t) 0x1337),\
+	.ack = (uint32_t) 0,\
+	.ofst = (uint8_t) (5 << 4),\
+	.flag = (uint8_t) 0x02,\
+	.win = (uint16_t) 0xffff,\
+	.chksum = (uint16_t) 0,\
+	.urgt = (uint16_t) 0\
+}
+
 typedef struct {
 	uint8_t dst_addr[6];
 	uint8_t src_addr[6];

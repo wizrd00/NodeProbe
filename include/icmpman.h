@@ -14,33 +14,6 @@
 
 #define FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(icmpv4_echo_header_t)
 
-#define ETHERNET_DEFAULT_HEADER() {\
-	.dst_addr = {(uint8_t) context->out_mac[0], (uint8_t) context->out_mac[1], (uint8_t) context->out_mac[2], (uint8_t) context->out_mac[3], (uint8_t) context->out_mac[4], (uint8_t) context->out_mac[5]},\
-	.src_addr = {(uint8_t) context->src_mac[0], (uint8_t) context->src_mac[1], (uint8_t) context->src_mac[2], (uint8_t) context->src_mac[3], (uint8_t) context->src_mac[4], (uint8_t) context->src_mac[5]},\
-	.type = htons(PROTO_IPV4) \
-}
-
-#define IPV4_DEFAULT_HEADER() {\
-	.ver_ihl = ((uint8_t) 4 << 4) | ((uint8_t) 5),\
-	.tos = (uint8_t) 0,\
-	.tlen = htons(FRAME_SIZE - sizeof(ethernet_header_t)),\
-	.id = htons(context->id),\
-	.flag_frag = htons(0x4000),\
-	.ttl = (uint8_t) 0x40,\
-	.proto = (uint8_t) PROTO_ICMPV4,\
-	.chksum = (uint16_t) 0,\
-	.src_addr = (uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24,\
-	.dst_addr = ip\
-}
-
-#define ICMPV4_DEFAULT_HEADER() {\
-	.type = (uint8_t) 8,\
-	.code = (uint8_t) 0,\
-	.chksum = (uint16_t) 0,\
-	.id = htons(context->id),\
-	.seq = (uint16_t) 0\
-}
-
 #define ICMPV4_ECHO_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\
 	.sll_protocol = htons(ETH_P_IP),\

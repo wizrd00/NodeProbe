@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
 	// REAL TEST OF ICMPMAN MODULE
 	// ---------------------------
-	icmpman_context_t context = {
+	/* icmpman_context_t context = {
 		.ifindex = 3,
 		.timeout = 2000,
 		.id = (unsigned short) 1337,
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "icmpman_echo_request() failed with status = %d", _stat);
 		return 1;
 	}
-	icmpman_delete_context(&context);
+	icmpman_delete_context(&context); */
 	// ----------------------------------
 	// END OF REAL TEST OF ICMPMAN MODULE
 	logman_delete_context();

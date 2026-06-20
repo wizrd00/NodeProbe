@@ -47,10 +47,11 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context, uint32_t ip)
 	size_t offset = 0;
 	unsigned char frame[FRAME_SIZE];
 	unsigned char *buffer = (unsigned char *) calloc(context->mtu_size, sizeof(unsigned char));
+	uint32_t src_ip = ((uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24);
 	CHECK_NOTEQUAL(buffer, NULL, ERRALOC, "calloc() failed to allocate %zu bytes from heap; %s", context->mtu_size, strerror(errno));
-	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER();
-	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER();
-	icmpv4_echo_header_t res_icmp_header, req_icmp_header = ICMPV4_DEFAULT_HEADER();
+	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->out_mac);
+	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(context->id, FRAME_SIZE - sizeof(ethernet_header_t), src_ip, ip);
+	icmpv4_echo_header_t res_icmp_header, req_icmp_header = ICMPV4_ECHO_DEFAULT_HEADER(context->id);
 	struct sockaddr_ll req_addr = ICMPV4_ECHO_REQUEST_DEFAULT_ADDR();
 	struct pollfd pfd = {
 		.fd = context->sockfd,

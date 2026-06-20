@@ -34,7 +34,8 @@ status_t arpman_delete_context(arpman_context_t *restrict context)
 status_t arpman_mac_request(arpman_context_t *restrict context, uint32_t ip, uint8_t *mac)
 {
 	status_t _stat = SUCCESS;
-	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER();
+	uint8_t dst_ip[] = {(uint8_t) (ip & 0x000000ff), (uint8_t) ((ip & 0x0000ff00) >> 8), (uint8_t) ((ip & 0x00ff0000) >> 16), (uint8_t) (ip >> 24)};
+	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER(context->src_mac, context->src_ip, dst_ip);
 	struct sockaddr_ll req_addr = ARP_REQUEST_DEFAULT_ADDR();
 	struct pollfd pfd = {
 		.fd = context->sockfd,
