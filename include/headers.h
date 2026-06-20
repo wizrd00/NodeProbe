@@ -7,6 +7,7 @@
 #define PROTO_ARP 0x0806
 #define PROTO_IPV4 0x0800
 #define PROTO_ICMPV4 0x0001
+#define PROTO_TCP 0x0006
 
 #define ARP_REQ 1
 #define ARP_RES 2
@@ -29,11 +30,11 @@
 		.tpa = {(uint8_t) _dst_ip[0], (uint8_t) _dst_ip[1], (uint8_t) _dst_ip[2], (uint8_t) _dst_ip[3]}\
 }
 
-#define IPV4_DEFAULT_HEADER(_id, _len, _src_ip, _dst_ip) {\
+#define IPV4_DEFAULT_HEADER(_len, _src_ip, _dst_ip) {\
 	.ver_ihl = ((uint8_t) 4 << 4) | ((uint8_t) 5),\
 	.tos = (uint8_t) 0,\
 	.tlen = htons((uint16_t) _len),\
-	.id = htons((uint16_t) _id),\
+	.id = htons((uint16_t) 0x1337),\
 	.flag_frag = htons((uint16_t) 0x4000),\
 	.ttl = (uint8_t) 0x40,\
 	.proto = (uint8_t) PROTO_ICMPV4,\
@@ -60,6 +61,14 @@
 	.win = (uint16_t) 0xffff,\
 	.chksum = (uint16_t) 0,\
 	.urgt = (uint16_t) 0\
+}
+
+#define IPV4_PSEUDO_DEFAULT_HEADER(_src_ip, _dst_ip, _len) {\
+	.src_ip = (uint32_t) _src_ip,\
+	.dst_ip = (uint32_t) _dst_ip,\
+	.zero = (uint8_t) 0,\
+	.proto = (uint8_t) PROTO_TCP,\
+	.len = (uint16_t) _len\
 }
 
 typedef struct {
@@ -123,10 +132,11 @@ typedef struct {
 } udp_header_t;
 
 typedef struct {
-	uint32_t src_addr;
-	uint32_t dst_addr;
+	uint32_t src_ip;
+	uint32_t dst_ip;
+	uint8_t zero;
 	uint8_t proto;
-	uint8_t len;
-} pseudo_header_t;
+	uint16_t len;
+} ipv4_pseudo_header_t;
 
 #endif
