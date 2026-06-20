@@ -13,6 +13,9 @@ uint16_t calc_icmpv4_checksum(icmpv4_echo_header_t *icmp)
 status_t check_echo_response(ethernet_header_t *res_eth, ethernet_header_t *req_eth, ipv4_header_t *res_ip, ipv4_header_t *req_ip, icmpv4_echo_header_t *res_icmp, icmpv4_echo_header_t *req_icmp)
 {
 	status_t _stat = SUCCESS;
+	bool match = (res_icmp->type == 0) || (res_icmp->code == 0) || (res_icmp->id == req_icmp->id);
+	if (!match)
+		_stat = FAILURE;
 	return _stat;
 }
 
@@ -76,6 +79,12 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context, uint32_t ip)
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed to receive ICMPv4 echo response on socket with fd = %d; %s", context->sockfd, strerror(errno));
 		CHECK_EQUAL_FREE((size_t) recvfrom_ret, FRAME_SIZE, ERRRECV, buffer, "size of the received frame is %zu instead of %zu", (size_t) recvfrom, FRAME_SIZE);
+		offset = 0;
+		memcpy((void *) &res_eth_header, (void *) frame, sizeof(ethernet_header_t));
+		offset += sizeof(ethernet_header_t);
+		memcpy((void *) &res_ip_header, (void *) (frame + offset), sizeof(ipv4_header_t));
+		offset += sizeof(ipv4_header_t);
+		memcpy((void *) &res_icmp_header, (void *) (frame + offset), sizeof(icmpv4_echo_header_t));
 		if (check_echo_response(&res_eth_header, &req_eth_header, &res_ip_header, &req_ip_header, &res_icmp_header, &req_icmp_header) == SUCCESS)
 			break;
 		LOGW("the received frame is invalid, trying again...");

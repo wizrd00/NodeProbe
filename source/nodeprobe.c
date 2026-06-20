@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
 		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
 		.out_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134} // the resolved MAC address from arpman module
+		// .out_mac = {(unsigned char) 162, (unsigned char) 37, (unsigned char) 206, (unsigned char) 23, (unsigned char) 231, (unsigned char) 167}
 	};
 	uint32_t ip;
 	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
