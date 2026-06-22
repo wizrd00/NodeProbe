@@ -52,8 +52,8 @@
 }
 
 #define TCP_SYNC_DEFAULT_HEADER(_src_port, _dst_port) {\
-	.src_port = (uint16_t) _src_port,\
-	.dst_port = (uint16_t) _dst_port,\
+	.src_port = htons((uint16_t) _src_port),\
+	.dst_port = htons((uint16_t) _dst_port),\
 	.seq = htonl((uint32_t) 0x1337),\
 	.ack = (uint32_t) 0,\
 	.ofst = (uint8_t) (5 << 4),\

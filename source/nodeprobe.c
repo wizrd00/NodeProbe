@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
 	// REAL TEST OF TCPMAN MODULE
 	// --------------------------
-	uint32_t ip;
+	/* uint32_t ip;
 	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
 		fprintf(stderr, "inet_pton() failed\n");
 		return 1;
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
 		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
 		.src_port = (unsigned short) 0x1337,
-		.dst_port = (unsigned short) 8080
+		.dst_port = (unsigned short) 80
 	};
 	if (tcpman_create_context(&context) != SUCCESS) {
 		fprintf(stderr, "tcpman_create_context() failed");
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "tcpman_sync_request() failed with status = %d", _stat);
 		return 1;
 	}
-	tcpman_delete_context(&context);
+	tcpman_delete_context(&context); */
 	logman_delete_context();
 	return 0;
 }
