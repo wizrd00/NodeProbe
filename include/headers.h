@@ -19,8 +19,8 @@
 }
 
 #define ARP_REQUEST_DEFAULT_HEADER(_src_mac, _src_ip, _dst_ip) {\
-		.htype = htons(PROTO_ETHERNET),\
-		.ptype = htons(PROTO_IPV4),\
+		.htype = htons((uint16_t) PROTO_ETHERNET),\
+		.ptype = htons((uint16_t) PROTO_IPV4),\
 		.hlen = (uint8_t) 6,\
 		.plen = (uint8_t) 4,\
 		.op = htons(ARP_REQ),\

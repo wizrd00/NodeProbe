@@ -70,6 +70,34 @@ int main(int argc, char **argv)
 	icmpman_delete_context(&context); */
 	// ----------------------------------
 	// END OF REAL TEST OF ICMPMAN MODULE
+
+	// REAL TEST OF TCPMAN MODULE
+	// --------------------------
+	uint32_t ip;
+	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
+		fprintf(stderr, "inet_pton() failed\n");
+		return 1;
+	}
+	tcpman_context_t context = {
+		.ifindex = 3,
+		.timeout = 2000,
+		.mtu_size = 1500,
+		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
+		.dst_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134}, // the resolved MAC address from arpman module
+		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
+		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
+		.src_port = (unsigned short) 0x1337,
+		.dst_port = (unsigned short) 8080
+	};
+	if (tcpman_create_context(&context) != SUCCESS) {
+		fprintf(stderr, "tcpman_create_context() failed");
+		return 1;
+	}
+	if ((_stat = tcpman_sync_request(&context)) != SUCCESS) {
+		fprintf(stderr, "tcpman_sync_request() failed with status = %d", _stat);
+		return 1;
+	}
+	tcpman_delete_context(&context);
 	logman_delete_context();
 	return 0;
 }

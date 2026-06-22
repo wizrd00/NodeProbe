@@ -5,6 +5,7 @@ typedef enum {
 	SUCCESS,
 	FAILURE,
 	TIMEOUT,
+	INVALID,
 	ERRALOC,
 	ERRSOCK,
 	ERRBIND,

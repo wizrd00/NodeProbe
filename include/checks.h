@@ -59,5 +59,13 @@
 #define CHECK_NOTEQUAL_CLOSE(val0, val1, stat, ffd, ...)\
 	do {if (val0 == val1) {LOGE("(" #stat ")" " " __VA_ARGS__); close(ffd); return _stat = stat;}} while(0)
 
+#define CHECK_GREATER_EQUAL(val0, val1, stat, ...)\
+	do {if (val0 < val1) {LOGE("(" #stat ")" " " __VA_ARGS__); return _stat = stat;}} while(0)
+
+#define CHECK_GREATER_EQUAL_FREE(val0, val1, stat, ptr, ...)\
+	do {if (val0 < val1) {LOGE("(" #stat ")" " " __VA_ARGS__); free((void *) ptr); ptr = NULL; return _stat = stat;}} while(0)
+
+#define CHECK_GREATER_EQUAL_CLOSE(val0, val1, stat, ffd, ...)\
+	do {if (val0 < val1) {LOGE("(" #stat ")" " " __VA_ARGS__); close(ffd); return _stat = stat;}} while(0)
 
 #endif
