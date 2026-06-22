@@ -33,7 +33,6 @@ int main(int argc, char **argv)
 	}
 	if ((_stat = arpman_mac_request(&context, mac)) != SUCCESS) {
 		fprintf(stderr, "arpman_request_mac() failed with status = %d\n", _stat);
-		return 1;
 	} else {
 		printf("The MAC Address = %x:%x:%x:%x:%x:%x\n", (int) mac[0], (int) mac[1], (int) mac[2], (int) mac[3], (int) mac[4], (int) mac[5]);
 	}
@@ -65,7 +64,6 @@ int main(int argc, char **argv)
 	}
 	if ((_stat = icmpman_echo_request(&context)) != SUCCESS) {
 		fprintf(stderr, "icmpman_echo_request() failed with status = %d", _stat);
-		return 1;
 	}
 	icmpman_delete_context(&context); */
 	// ----------------------------------
@@ -95,7 +93,6 @@ int main(int argc, char **argv)
 	}
 	if ((_stat = tcpman_sync_request(&context)) != SUCCESS) {
 		fprintf(stderr, "tcpman_sync_request() failed with status = %d", _stat);
-		return 1;
 	}
 	tcpman_delete_context(&context); */
 	logman_delete_context();
