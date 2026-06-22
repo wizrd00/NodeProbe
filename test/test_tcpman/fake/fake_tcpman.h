@@ -11,7 +11,7 @@
 #include <net/ethernet.h>
 #include <linux/if_packet.h>
 
-#define FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(tcp_header_t)
+#define TCPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(tcp_header_t)
 
 #define TCP_SYNC_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\

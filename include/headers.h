@@ -23,24 +23,24 @@
 		.ptype = htons((uint16_t) PROTO_IPV4),\
 		.hlen = (uint8_t) 6,\
 		.plen = (uint8_t) 4,\
-		.op = htons(ARP_REQ),\
+		.op = htons((uint16_t) ARP_REQ),\
 		.sha = {(uint8_t) _src_mac[0], (uint8_t) _src_mac[1], (uint8_t) _src_mac[2], (uint8_t) _src_mac[3], (uint8_t) _src_mac[4], (uint8_t) _src_mac[5]},\
 		.spa = {(uint8_t) _src_ip[0], (uint8_t) _src_ip[1], (uint8_t) _src_ip[2], (uint8_t) _src_ip[3]},\
 		.tha = {(uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0},\
 		.tpa = {(uint8_t) _dst_ip[0], (uint8_t) _dst_ip[1], (uint8_t) _dst_ip[2], (uint8_t) _dst_ip[3]}\
 }
 
-#define IPV4_DEFAULT_HEADER(_len, _src_ip, _dst_ip) {\
+#define IPV4_DEFAULT_HEADER(_len, _proto, _src_ip, _dst_ip) {\
 	.ver_ihl = ((uint8_t) 4 << 4) | ((uint8_t) 5),\
 	.tos = (uint8_t) 0,\
 	.tlen = htons((uint16_t) _len),\
 	.id = htons((uint16_t) 0x1337),\
 	.flag_frag = htons((uint16_t) 0x4000),\
 	.ttl = (uint8_t) 0x40,\
-	.proto = (uint8_t) PROTO_ICMPV4,\
+	.proto = (uint8_t) _proto,\
 	.chksum = (uint16_t) 0,\
-	.src_addr = _src_ip,\
-	.dst_addr = _dst_ip\
+	.src_addr = (uint32_t) _src_ip,\
+	.dst_addr = (uint32_t) _dst_ip\
 }
 
 #define ICMPV4_ECHO_DEFAULT_HEADER(_id) {\
@@ -63,12 +63,12 @@
 	.urgt = (uint16_t) 0\
 }
 
-#define IPV4_PSEUDO_DEFAULT_HEADER(_src_ip, _dst_ip, _len) {\
+#define IPV4_PSEUDO_DEFAULT_HEADER(_src_ip, _dst_ip, _proto, _len) {\
 	.src_ip = (uint32_t) _src_ip,\
 	.dst_ip = (uint32_t) _dst_ip,\
 	.zero = (uint8_t) 0,\
-	.proto = (uint8_t) PROTO_TCP,\
-	.len = (uint16_t) _len\
+	.proto = (uint8_t) _proto,\
+	.len = htons((uint16_t) _len)\
 }
 
 typedef struct {

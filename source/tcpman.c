@@ -55,9 +55,9 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 	uint32_t src_ip = ((uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24);
 	uint32_t dst_ip = ((uint32_t) context->dst_ip[0] | (uint32_t) context->dst_ip[1] << 8 | (uint32_t) context->dst_ip[2] << 16 | (uint32_t) context->dst_ip[3] << 24);
 	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
-	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(TCPMAN_FRAME_SIZE - sizeof(ethernet_header_t), src_ip, dst_ip);
+	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(TCPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_TCP, src_ip, dst_ip);
 	tcp_header_t res_tcp_header, req_tcp_header = TCP_SYNC_DEFAULT_HEADER(context->src_port, context->dst_port);
-	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, sizeof(tcp_header_t));
+	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, PROTO_TCP, sizeof(tcp_header_t));
 	struct sockaddr_ll req_addr = TCP_SYNC_REQUEST_DEFAULT_ADDR();
 	struct pollfd pfd = {
 		.fd = context->sockfd,
@@ -72,7 +72,6 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 	memcpy((void *) (frame + offset), (void *) &req_tcp_header, sizeof(tcp_header_t));
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, TCPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed to send TCP sync request on socket with fd = %d; %s", context->sockfd, strerror(errno));
-	CHECK_EQUAL_FREE((size_t) sendto_ret, TCPMAN_FRAME_SIZE, ERRSEND, buffer, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, TCPMAN_FRAME_SIZE);
 	while (1) {
 		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
 		case -1 :
@@ -85,7 +84,7 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed to receive TCP response on socket with fd = %d; %s", context->sockfd, strerror(errno));
-		CHECK_EQUAL_FREE((size_t) recvfrom_ret, TCPMAN_FRAME_SIZE, ERRRECV, buffer, "size of the received frame is %zu instead of %zu", (size_t) recvfrom, TCPMAN_FRAME_SIZE);
+		CHECK_GREATER_EQUAL_FREE((size_t) recvfrom_ret, TCPMAN_FRAME_SIZE, ERRSEND, buffer, "recvfrom() failed and the received frame has size = %zu which is less than expected size %zu", (size_t) recvfrom_ret, TCPMAN_FRAME_SIZE);
 		offset = 0;
 		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
 		offset += sizeof(ethernet_header_t);
