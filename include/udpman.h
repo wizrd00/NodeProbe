@@ -1,9 +1,8 @@
-#ifndef NODEPROBE_TCPMAN_H
-#define NODEPROBE_TCPMAN_H
+#ifndef NODEPROBE_UDPMAN_H
+#define NODEPROBE_UDPMAN_H
 
 #include "types.h"
 #include "utils/checksum.h"
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <poll.h>
@@ -12,9 +11,9 @@
 #include <net/ethernet.h>
 #include <linux/if_packet.h>
 
-#define TCPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(tcp_header_t)
+#define UDPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(udp_header_t)
 
-#define TCP_SYNC_REQUEST_DEFAULT_ADDR() {\
+#define UDP_CHECK_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\
 	.sll_protocol = htons(ETH_P_IP),\
 	.sll_ifindex = context->ifindex,\
@@ -33,12 +32,12 @@ typedef struct {
 	unsigned char dst_ip[4];
 	unsigned short src_port;
 	unsigned short dst_port;
-} tcpman_context_t;
+} udpman_context_t;
 
-status_t tcpman_create_context(tcpman_context_t *restrict context);
+status_t udpman_create_context(udpman_context_t *restrict context);
 
-status_t tcpman_delete_context(tcpman_context_t *restrict context);
+status_t udpman_delete_context(udpman_context_t *restrict context);
 
-status_t tcpman_sync_request(tcpman_context_t *restrict context);
+status_t udpman_check_request(udpman_context_t *restrict context);
 
 #endif

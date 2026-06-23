@@ -8,6 +8,7 @@
 #define PROTO_IPV4 0x0800
 #define PROTO_ICMPV4 0x0001
 #define PROTO_TCP 0x0006
+#define PROTO_UPD 0x0011
 
 #define ARP_REQ 1
 #define ARP_RES 2
@@ -63,6 +64,13 @@
 	.urgt = (uint16_t) 0\
 }
 
+#define UDP_DEFAULT_HEADER(_src_port, _dst_port, _len) {\
+	.src_port = htons((uint16_t) _src_port),\
+	.dst_port = htons((uint16_t) _dst_port),\
+	.len = htons((uint16_t) _len),\
+	.chksum = (uint16_t) 0\
+}
+
 #define IPV4_PSEUDO_DEFAULT_HEADER(_src_ip, _dst_ip, _proto, _len) {\
 	.src_ip = (uint32_t) _src_ip,\
 	.dst_ip = (uint32_t) _dst_ip,\
@@ -110,6 +118,15 @@ typedef struct {
 	uint16_t id;
 	uint16_t seq;
 } icmpv4_echo_header_t;
+
+typedef struct {
+	uint8_t type;
+	uint8_t code;
+	uint16_t chksum;
+	uint32_t unused;
+	ipv4_header_t ip;
+	uint8_t data[8];
+} icmpv4_unreachable_header_t;
 
 typedef struct {
 	uint16_t src_port;

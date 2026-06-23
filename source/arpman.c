@@ -41,7 +41,7 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 		.events = POLLIN
 	};
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) &req_header, sizeof(arp_inet_header_t), 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
-	CHECK_NOTEQUAL(sendto_ret, (ssize_t) -1, ERRSEND, "sendto() failed to send ARP request on socket with fd = %d; %s", context->sockfd, strerror(errno));
+	CHECK_NOTEQUAL(sendto_ret, (ssize_t) -1, ERRSEND, "sendto() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	CHECK_EQUAL((size_t) sendto_ret, sizeof(arp_inet_header_t), ERRSEND, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, sizeof(arp_inet_header_t));
 	while (1) {
 		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
@@ -54,7 +54,7 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 				CHECK_STAT(ERRPOLL, "poll() failed and pfd.revents = %d", pfd.revents);
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) &res_header, sizeof(arp_inet_header_t), 0, NULL, NULL);
-		CHECK_NOTEQUAL(recvfrom_ret, (ssize_t) -1, ERRRECV, "recvfrom() failed to receive ARP response on socket with fd = %d; %s", context->sockfd, strerror(errno));
+		CHECK_NOTEQUAL(recvfrom_ret, (ssize_t) -1, ERRRECV, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 		if (check_arp_response(&res_header, &req_header) == SUCCESS)
 			break;
 		LOGW("The received datagram is invalid, trying again...");
