@@ -35,7 +35,7 @@ status_t udpman_delete_context(udpman_context_t *restrict context)
 	return _stat;
 }
 
-status_t udpman_check_context(udpman_context_t *restrict context)
+status_t udpman_udp_request(udpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
 	size_t offset = 0;
@@ -62,13 +62,14 @@ status_t udpman_check_context(udpman_context_t *restrict context)
 	offset += sizeof(ipv4_header_t);
 	memcpy((void *) (frame + offset), (void *) &req_udp_header, sizeof(udp_header_t));
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, UDPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
-	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed to send UDP check request on socket with fd = %d; %s", context->sockfd, strerror(errno));
+	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed to send UDP request on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	while (1) {
 		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
 		case -1 :
 			CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed; %s", strerror(errno));
 		case 0 :
-			CHECK_STAT_FREE(TIMEOUT, buffer, "poll() timeout after %d ms", context->timeout);
+			free((void *) buffer);
+			return _stat;
 		case 1 :
 			if ((pfd.revents & POLLIN) != POLLIN)
 				CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed and pfd.revents = %d", pfd.revents);
@@ -76,6 +77,5 @@ status_t udpman_check_context(udpman_context_t *restrict context)
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	}
-	free((void *) buffer);
 	return _stat;
 }

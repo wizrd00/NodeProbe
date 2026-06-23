@@ -38,6 +38,6 @@ status_t udpman_create_context(udpman_context_t *restrict context);
 
 status_t udpman_delete_context(udpman_context_t *restrict context);
 
-status_t udpman_check_request(udpman_context_t *restrict context);
+status_t udpman_udp_request(udpman_context_t *restrict context);
 
 #endif

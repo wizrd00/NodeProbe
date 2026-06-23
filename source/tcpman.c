@@ -84,21 +84,6 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
-		CHECK_GREATER_EQUAL_FREE((size_t) recvfrom_ret, TCPMAN_FRAME_SIZE, ERRSEND, buffer, "recvfrom() failed and the received frame has size = %zu which is less than expected size %zu", (size_t) recvfrom_ret, TCPMAN_FRAME_SIZE);
-		offset = 0;
-		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		offset += sizeof(ethernet_header_t);
-		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		offset += sizeof(ipv4_header_t);
-		memcpy((void *) &res_tcp_header, (void *) (buffer + offset), sizeof(tcp_header_t));
-		_stat = check_sync_response(&res_tcp_header, &req_tcp_header);
-		if (_stat == INVALID) {
-			LOGW("the received frame is invalid, trying again...");
-			continue;
-		}
-		if (_stat == FAILURE)
-			LOGW("the received frame includes a TCP reset segment");
-		break;
 	}
 	free((void *) buffer);
 	return _stat;

@@ -80,16 +80,6 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
-		CHECK_EQUAL_FREE((size_t) recvfrom_ret, ICMPMAN_FRAME_SIZE, ERRRECV, buffer, "size of the received frame is %zu instead of %zu", (size_t) recvfrom, ICMPMAN_FRAME_SIZE);
-		offset = 0;
-		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		offset += sizeof(ethernet_header_t);
-		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		offset += sizeof(ipv4_header_t);
-		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_echo_header_t));
-		if (check_echo_response(&res_icmp_header, &req_icmp_header) == SUCCESS)
-			break;
-		LOGW("the received frame is invalid, trying again...");
 	}
 	free((void *) buffer);
 	return _stat;
