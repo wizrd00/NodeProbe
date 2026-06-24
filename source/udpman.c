@@ -8,7 +8,7 @@ static uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
 static uint16_t calc_udp_checksum(udp_header_t *udp, ipv4_pseudo_header_t *pseudo)
 {
 	uint8_t data[sizeof(udp_header_t) + sizeof(ipv4_pseudo_header_t)];
-	memcpy((void *) data, (void *) tcp, sizeof(udp_header_t));
+	memcpy((void *) data, (void *) udp, sizeof(udp_header_t));
 	memcpy((void *) (data + sizeof(udp_header_t)), (void *) pseudo, sizeof(ipv4_pseudo_header_t));
 	return checksum(data, sizeof(data));
 }
