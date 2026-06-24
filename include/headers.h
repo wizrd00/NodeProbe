@@ -8,7 +8,7 @@
 #define PROTO_IPV4 0x0800
 #define PROTO_ICMPV4 0x0001
 #define PROTO_TCP 0x0006
-#define PROTO_UPD 0x0011
+#define PROTO_UDP 0x0011
 
 #define ARP_REQ 1
 #define ARP_RES 2
