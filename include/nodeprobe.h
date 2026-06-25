@@ -6,6 +6,7 @@
 #include "arpman.h"
 #include "icmpman.h"
 #include "tcpman.h"
+#include "udpman.h"
 #include <arpa/inet.h>
 
 int main(int argc, char **argv);

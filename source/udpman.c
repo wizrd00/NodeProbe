@@ -13,6 +13,17 @@ static uint16_t calc_udp_checksum(udp_header_t *udp, ipv4_pseudo_header_t *pseud
 	return checksum(data, sizeof(data));
 }
 
+static status_t check_icmp_response(icmpv4_unreachable_header_t *res_icmp, udp_header_t *req_udp)
+{
+	status_t _stat = SUCCESS;
+	bool match = (res_icmp->type == (uint8_t) 3) && (res_icmp->code == (uint8_t) 3);
+	if (!match)
+		return _stat = INVALID;
+	if (memcmp(res_icmp->data, req_udp, sizeof(udp_header_t)) != 0)
+		return _stat = INVALID;
+	return _stat;
+}
+
 status_t udpman_create_context(udpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
@@ -76,6 +87,28 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
+		offset = 0;
+		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
+			continue;
+		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
+		offset += sizeof(ethernet_header_t);
+		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
+			continue;
+		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
+		if (!CHECK_INCLUDE_ICMP_MESSAGE(res_ip_header))
+			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
+		offset += sizeof(ipv4_header_t);
+		if ((size_t) recvfrom_ret < sizeof(icmpv4_unreachable_header_t))
+			continue;
+		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_unreachable_header_t));
+		if (check_icmp_response(&res_icmp_header, &req_udp_header) == SUCCESS) {
+			_stat = FAILURE;
+			break;
+		}
 	}
 	return _stat;
 }

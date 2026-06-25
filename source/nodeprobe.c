@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
 		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
 		.src_port = (unsigned short) 0x1337,
-		.dst_port = (unsigned short) 80
+		.dst_port = (unsigned short) 8080
 	};
 	if (tcpman_create_context(&context) != SUCCESS) {
 		fprintf(stderr, "tcpman_create_context() failed");
@@ -95,6 +95,42 @@ int main(int argc, char **argv)
 		fprintf(stderr, "tcpman_sync_request() failed with status = %d", _stat);
 	}
 	tcpman_delete_context(&context); */
+	// ---------------------------------
+	// END OF REAL TEST OF TCPMAN_MODULE
+
+	// REAL TEST OF UDPMAN MODULE
+	// --------------------------
+	/* uint32_t ip;
+	if (inet_pton(AF_INET, argv[1], &ip) != 1) {
+		fprintf(stderr, "inet_pton() failed\n");
+		return 1;
+	}
+	udpman_context_t context = {
+		.ifindex = 3,
+		.timeout = 2000,
+		.mtu_size = 1500,
+		.src_mac = {(unsigned char) 204, (unsigned char) 71, (unsigned char) 64, (unsigned char) 252, (unsigned char) 123, (unsigned char) 5},
+		.dst_mac = {(unsigned char) 94, (unsigned char) 121, (unsigned char) 224, (unsigned char) 78, (unsigned char) 16, (unsigned char) 134}, // the resolved MAC address from arpman module
+		.src_ip = {(unsigned char) 10, (unsigned char) 28, (unsigned char) 42, (unsigned char) 207},
+		.dst_ip = {(unsigned char) (ip & 0xff), (unsigned char) (ip >> 8) & 0xff, (unsigned char) (ip >> 16) & 0xff, (unsigned char) (ip >> 24) & 0xff},
+		.src_port = (unsigned short) 0x1337,
+		.dst_port = (unsigned short) 80
+	};
+	if (udpman_create_context(&context) != SUCCESS) {
+		fprintf(stderr, "udpman_create_context() failed");
+		return 1;
+	}
+	switch ((_stat = udpman_udp_request(&context))) {
+	case SUCCESS :
+		printf("probably there is a udp service on port %hu\n", context.dst_port);
+		break;
+	case FAILURE :
+		fprintf(stderr, "there is definitely no service on port %hu\n", context.dst_port);
+		break;
+	}
+	udpman_delete_context(&context); */
+	// ---------------------------------
+	// END OF REAL TEST OF UDPMAN MODULE
 	logman_delete_context();
 	return 0;
 }

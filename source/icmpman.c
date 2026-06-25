@@ -84,16 +84,16 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
 			continue;
 		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
 		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
 			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
 		offset += sizeof(ethernet_header_t);
 		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
 			continue;
 		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		if (!CHECK_INCLUDE_ICMP_MESSAGE(res_ip_header))
 			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		offset += sizeof(ipv4_header_t);
 		if ((size_t) recvfrom_ret < sizeof(icmpv4_echo_header_t))
 			continue;

@@ -84,6 +84,26 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
+		offset = 0;
+		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
+			continue;
+		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
+		offset += sizeof(ethernet_header_t);
+		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
+			continue;
+		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
+		if (!CHECK_INCLUDE_TCP_SEGMENT(res_ip_header))
+			continue;
+		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
+		offset += sizeof(ipv4_header_t);
+		if ((size_t) recvfrom_ret < sizeof(tcp_header_t))
+			continue;
+		memcpy((void *) &res_tcp_header, (void *) (buffer + offset), sizeof(tcp_header_t));
+		if (check_sync_response(&res_tcp_header, &req_tcp_header) == SUCCESS)
+			break;
 	}
 	free((void *) buffer);
 	return _stat;
