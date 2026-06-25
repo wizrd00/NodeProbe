@@ -22,6 +22,9 @@
 	.sll_addr = {context->dst_mac[0], context->dst_mac[1], context->dst_mac[2], context->dst_mac[3], context->dst_mac[4], context->dst_mac[5]}\
 }
 
+#define CHECK_INCLUDE_IPV4_DATAGRAM(_eth_header) (_eth_header.type == htons((uint16_t) PROTO_IPV4))
+#define CHECK_INCLUDE_ICMP_MESSAGE(_ip_header) (_ip_header.proto == (uint8_t) PROTO_ICMPV4)
+
 typedef struct {
 	int sockfd;
 	int ifindex;

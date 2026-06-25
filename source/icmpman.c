@@ -1,16 +1,16 @@
 #include "icmpman.h"
 
-uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
+static uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
 {
 	return checksum((uint8_t *) ip, sizeof(ipv4_header_t));
 }
 
-uint16_t calc_icmpv4_checksum(icmpv4_echo_header_t *icmp)
+static uint16_t calc_icmpv4_checksum(icmpv4_echo_header_t *icmp)
 {
 	return checksum((uint8_t *) icmp, sizeof(icmpv4_echo_header_t));
 }
 
-status_t check_echo_response(icmpv4_echo_header_t *res_icmp, icmpv4_echo_header_t *req_icmp)
+static status_t check_echo_response(icmpv4_echo_header_t *res_icmp, icmpv4_echo_header_t *req_icmp)
 {
 	status_t _stat = SUCCESS;
 	bool match = (res_icmp->type == 0) && (res_icmp->code == 0) && (res_icmp->id == req_icmp->id);
@@ -80,6 +80,26 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 		}
 		ssize_t recvfrom_ret = recvfrom(context->sockfd, (void *) buffer, context->mtu_size, 0, NULL, NULL);
 		CHECK_NOTEQUAL_FREE(recvfrom_ret, (ssize_t) -1, ERRRECV, buffer, "recvfrom() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
+		offset = 0;
+		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
+			continue;
+		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
+		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+			continue;
+		offset += sizeof(ethernet_header_t);
+		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
+			continue;
+		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
+		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
+		if (!CHECK_INCLUDE_ICMP_MESSAGE(res_ip_header))
+			continue;
+		offset += sizeof(ipv4_header_t);
+		if ((size_t) recvfrom_ret < sizeof(icmpv4_echo_header_t))
+			continue;
+		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_echo_header_t));
+		if (check_echo_response(&res_icmp_header, &req_icmp_header) == SUCCESS)
+			break;
 	}
 	free((void *) buffer);
 	return _stat;
