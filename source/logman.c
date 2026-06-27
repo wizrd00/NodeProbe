@@ -55,10 +55,14 @@ static int map_logfile(void)
 int logman_create_context(const char *path, size_t count)
 {
 	logc.size = count * sizeof(logman_msg_t);
-	if (create_logfile(path) == -1)
+	if (create_logfile(path) == -1) {
+		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
 		return -1;
-	if (map_logfile() == -1)
+	}
+	if (map_logfile() == -1) {
+		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
 		return -1;
+	}
 	return 0;
 }
 
