@@ -1,6 +1,13 @@
 #include "logman.h"
 
-logman_context_t logc = {.logfile = NULL, .buffer = NULL, .pos = 0UL, .size = 0UL, .logcount = 0UL};
+logman_context_t logc = {
+	.logfile = NULL,
+	.buffer = NULL,
+	.pos = 0UL,
+	.size = 0UL,
+	.logcount = 0UL,
+	.mutex = PTHREAD_INITIALIZE_MUTEX
+};
 
 static char *sstrncpy(char *dst, const char *src, size_t dsize)
 {
@@ -13,8 +20,6 @@ static char *sstrncpy(char *dst, const char *src, size_t dsize)
 
 static int create_logfile(const char *path)
 {
-	if (logc.logfile == NULL)
-		return 1;
 	size_t pathlen = strlen(path);
 	char *logfile_path = (char *) calloc(pathlen + LOGFILE_NAMESIZE + 1, sizeof(char));
 	time_t logtime = time(NULL);
@@ -64,6 +69,8 @@ int logman_delete_context(void)
 
 void logging(const char *level, const char *mod, const char *pos, const char *fmt, ...)
 {
+	if (logc.logfile == NULL)
+		return;
 	logman_msg_t logmsg;
 	time_t logtime = time(NULL);
 	struct tm *ltime = localtime(&logtime);
@@ -81,6 +88,8 @@ void logging(const char *level, const char *mod, const char *pos, const char *fm
 	sstrncpy(logmsg.msg, msg, MSGSIZE);
 	va_end(ap);
 	logc.logcount++;
+	pthread_mutex_lock(&logc.mutex);
 	append_log(logmsg);
+	pthread_mutex_unlock(&logc.mutex);
 	return;
 }
