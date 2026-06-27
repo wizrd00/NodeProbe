@@ -52,7 +52,7 @@ make
 # with gcc
 make CC=gcc
 
-# clean build artifacts
+# clean
 make clean
 ```
 
