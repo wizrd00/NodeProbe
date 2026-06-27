@@ -1,6 +1,6 @@
 #include "logman.h"
 
-logman_context_t logc;
+logman_context_t logc = {.logfile = NULL, .buffer = NULL, .pos = 0UL, .size = 0UL, .logcount = 0UL};
 
 static char *sstrncpy(char *dst, const char *src, size_t dsize)
 {
@@ -13,6 +13,8 @@ static char *sstrncpy(char *dst, const char *src, size_t dsize)
 
 static int create_logfile(const char *path)
 {
+	if (logc.logfile == NULL)
+		return 1;
 	size_t pathlen = strlen(path);
 	char *logfile_path = (char *) calloc(pathlen + LOGFILE_NAMESIZE + 1, sizeof(char));
 	time_t logtime = time(NULL);
