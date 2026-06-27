@@ -8,26 +8,25 @@ BIN_DIR := binary
 LIB_DIR := library
 
 ifeq ($(LIBC), musl)
-NODEPROBE := nodeprobe-musl.bin
+NODEPROBE := libnodeprobe-musl.so
 else ifeq ($(LIBC), glibc)
-NODEPROBE := nodeprobe-glibc.bin
+NODEPROBE := libnodeprobe-glibc.so
 else
 $(error unsupported libc : $(LIBC))
 endif
 
-#LOGMAN_MACROS := -DLOG_TRACE -DLOG_DEBUG -DLOG_WARNN -DLOG_ERROR
-LOGMAN_MACROS := -DLOG_DEBUG -DLOG_ERROR
+LOGMAN_MACROS := -DLOG_TRACE -DLOG_DEBUG -DLOG_WARNN -DLOG_ERROR
 
 ifeq ($(CC), pcc)
-CFLAGS := -std=c99 -O3 -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread $(LOGMAN_MACROS)
+CFLAGS := -std=c99 -O3 -fPIC -shared -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread $(LOGMAN_MACROS)
 ifeq ($(wildcard $(LIB_DIR)/*), $())
-LIG_FLAGS :=
+LIB_FLAGS :=
 else
 LIB_FLAGS := -Wl,--library-path=$(LIB_DIR),-rpath=$(LIB_DIR)
 endif
 else ifeq ($(CC), gcc)
 SPECIAL_OPTS = -DARPHRD_ETHER=1
-CFLAGS := -std=gnu99 -O3 -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(LOGMAN_MACROS) $(SPECIAL_OPTS)
+CFLAGS := -std=c99 -O3 -fPIC -shared -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(LOGMAN_MACROS) $(SPECIAL_OPTS)
 ifeq ($(wildcard $(LIB_DIR)/*), $())
 LIG_FLAGS :=
 else

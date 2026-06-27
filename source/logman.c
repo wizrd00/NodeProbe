@@ -6,7 +6,7 @@ logman_context_t logc = {
 	.pos = 0UL,
 	.size = 0UL,
 	.logcount = 0UL,
-	.mutex = PTHREAD_INITIALIZE_MUTEX
+	.mutex = PTHREAD_MUTEX_INITIALIZER
 };
 
 static char *sstrncpy(char *dst, const char *src, size_t dsize)
