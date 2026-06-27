@@ -48,6 +48,7 @@ status_t tcpman_delete_context(tcpman_context_t *restrict context)
 status_t tcpman_sync_request(tcpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
+	int timeout = context->timeout;
 	size_t offset = 0;
 	unsigned char frame[TCPMAN_FRAME_SIZE];
 	unsigned char *buffer = (unsigned char *) calloc(context->mtu_size, sizeof(unsigned char));
@@ -59,6 +60,7 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 	tcp_header_t res_tcp_header, req_tcp_header = TCP_SYNC_DEFAULT_HEADER(context->src_port, context->dst_port);
 	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, PROTO_TCP, sizeof(tcp_header_t));
 	struct sockaddr_ll req_addr = TCP_SYNC_REQUEST_DEFAULT_ADDR();
+	struct timespec start_tp, now_tp;
 	struct pollfd pfd = {
 		.fd = context->sockfd,
 		.events = POLLIN
@@ -72,8 +74,13 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 	memcpy((void *) (frame + offset), (void *) &req_tcp_header, sizeof(tcp_header_t));
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, TCPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
+	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
-		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
+		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
+		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp);
+		if (timeout < 0)
+			break;
+		switch (poll(&pfd, (nfds_t) 1, timeout)) {
 		case -1 :
 			CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed; %s", strerror(errno));
 		case 0 :

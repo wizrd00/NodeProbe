@@ -34,8 +34,10 @@ status_t arpman_delete_context(arpman_context_t *restrict context)
 status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 {
 	status_t _stat = SUCCESS;
+	int timeout = context->timeout;
 	arp_inet_header_t res_header, req_header = ARP_REQUEST_DEFAULT_HEADER(context->src_mac, context->src_ip, context->dst_ip);
 	struct sockaddr_ll req_addr = ARP_REQUEST_DEFAULT_ADDR();
+	struct timespec start_tp, now_tp;
 	struct pollfd pfd = {
 		.fd = context->sockfd,
 		.events = POLLIN
@@ -43,8 +45,13 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) &req_header, sizeof(arp_inet_header_t), 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL(sendto_ret, (ssize_t) -1, ERRSEND, "sendto() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	CHECK_EQUAL((size_t) sendto_ret, sizeof(arp_inet_header_t), ERRSEND, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, sizeof(arp_inet_header_t));
+	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
-		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
+		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
+		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp);
+		if (timeout < 0)
+			break;
+		switch (poll(&pfd, (nfds_t) 1, timeout)) {
 		case -1 :
 			CHECK_STAT(ERRPOLL, "poll() failed; %s", strerror(errno));
 		case 0 :

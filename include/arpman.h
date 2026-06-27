@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <poll.h>
 #include <sys/socket.h>

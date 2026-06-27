@@ -49,6 +49,7 @@ status_t udpman_delete_context(udpman_context_t *restrict context)
 status_t udpman_udp_request(udpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
+	int timeout = context->timeout;
 	size_t offset = 0;
 	unsigned char frame[UDPMAN_FRAME_SIZE];
 	unsigned char *buffer = (unsigned char *) calloc(context->mtu_size, sizeof(unsigned char));
@@ -61,6 +62,7 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 	icmpv4_unreachable_header_t res_icmp_header;
 	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, PROTO_UDP, sizeof(udp_header_t));
 	struct sockaddr_ll req_addr = UDP_CHECK_REQUEST_DEFAULT_ADDR();
+	struct timespec start_tp, now_tp;
 	struct pollfd pfd = {
 		.fd = context->sockfd,
 		.events = POLLIN
@@ -74,8 +76,13 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 	memcpy((void *) (frame + offset), (void *) &req_udp_header, sizeof(udp_header_t));
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, UDPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed to send UDP request on socket with fd = %d; %s", context->sockfd, strerror(errno));
+	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
-		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
+		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
+		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp);
+		if (timeout < 0)
+			break;
+		switch (poll(&pfd, (nfds_t) 1, timeout)) {
 		case -1 :
 			CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed; %s", strerror(errno));
 		case 0 :

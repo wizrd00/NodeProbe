@@ -7,6 +7,7 @@ typedef enum {
 	TIMEOUT,
 	INVALID,
 	ERRALOC,
+	ERRTIME,
 	ERRSOCK,
 	ERRBIND,
 	ERRSEND,

@@ -4,6 +4,7 @@
 #include "types.h"
 #include "utils/checksum.h"
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <poll.h>
 #include <sys/socket.h>

@@ -44,6 +44,7 @@ status_t icmpman_delete_context(icmpman_context_t *restrict context)
 status_t icmpman_echo_request(icmpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
+	int timeout = context->timeout;
 	size_t offset = 0;
 	unsigned char frame[ICMPMAN_FRAME_SIZE];
 	unsigned char *buffer = (unsigned char *) calloc(context->mtu_size, sizeof(unsigned char));
@@ -54,6 +55,7 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(ICMPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_ICMPV4, src_ip, dst_ip);
 	icmpv4_echo_header_t res_icmp_header, req_icmp_header = ICMPV4_ECHO_DEFAULT_HEADER(context->id);
 	struct sockaddr_ll req_addr = ICMPV4_ECHO_REQUEST_DEFAULT_ADDR();
+	struct timespec start_tp, now_tp;
 	struct pollfd pfd = {
 		.fd = context->sockfd,
 		.events = POLLIN
@@ -68,8 +70,13 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, ICMPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	CHECK_EQUAL_FREE((size_t) sendto_ret, ICMPMAN_FRAME_SIZE, ERRSEND, buffer, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, ICMPMAN_FRAME_SIZE);
+	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
-		switch (poll(&pfd, (nfds_t) 1, context->timeout)) {
+		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
+		timeout -= CONVERT_TIMESPEC(start_tp) - CONVERT_TIMESPEC(now_tp);
+		if (timeout < 0)
+			break;
+		switch (poll(&pfd, (nfds_t) 1, timeout)) {
 		case -1 :
 			CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed; %s", strerror(errno));
 		case 0 :
