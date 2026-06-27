@@ -47,7 +47,7 @@ typedef struct {
 	char msg[MSGSIZE];
 } logman_msg_t;
 
-int logman_create_context(const char *path, size_t count);
+int logman_create_context(int fd, size_t count);
 
 int logman_delete_context(void);
 

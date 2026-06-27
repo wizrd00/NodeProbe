@@ -18,48 +18,33 @@ static char *sstrncpy(char *dst, const char *src, size_t dsize)
 	return dst;
 }
 
-static int create_logfile(const char *path)
+static int create_logfile(int fd)
 {
-	size_t pathlen = strlen(path);
-	char *logfile_path = (char *) calloc(pathlen + LOGFILE_NAMESIZE + 1, sizeof(char));
-	time_t logtime = time(NULL);
-	if ((logtime == -1) || (logfile_path == NULL))
+	logc.logfile = fdopen(fd, "w+");
+	if (logc.logfile == NULL)
 		return -1;
-	sstrncpy(logfile_path, path, pathlen + 1);
-	snprintf(logfile_path + pathlen, LOGFILE_NAMESIZE, "logfile_%u.log", (unsigned int) logtime);
-	logc.logfile = fopen(logfile_path, "w+");
-	if (logc.logfile == NULL) {
-		free((void *) logfile_path);
+	if (ftruncate(fileno(logc.logfile), (off_t) logc.size) == -1)
 		return -1;
-	}
-	if (ftruncate(fileno(logc.logfile), (off_t) logc.size) == -1) {
-		fclose(logc.logfile);
-		free((void *) logfile_path);
-		return -1;
-	}
-	free((void *) logfile_path);
 	return 0;
 }
 
-static int map_logfile(void)
+static int map_logfile(int fd)
 {
-	logc.buffer = mmap(NULL, logc.size, PROT_WRITE | PROT_READ, MAP_SHARED, fileno(logc.logfile), 0);
-	if (logc.buffer == MAP_FAILED) {
-		fclose(logc.logfile);
+	logc.buffer = mmap(NULL, logc.size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
+	if (logc.buffer == MAP_FAILED)
 		return -1;
-	}
 	logc.pos = logc.logcount = 0;
 	return 0;
 }
 
-int logman_create_context(const char *path, size_t count)
+int logman_create_context(int fd, size_t count)
 {
 	logc.size = count * sizeof(logman_msg_t);
-	if (create_logfile(path) == -1) {
+	if (create_logfile(fd) == -1) {
 		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
 		return -1;
 	}
-	if (map_logfile() == -1) {
+	if (map_logfile(fd) == -1) {
 		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
 		return -1;
 	}
