@@ -51,6 +51,8 @@ typedef enum {
 } status_t;
 ```
 
+---
+
 ### How to discover hosts?
 *arpman* module in NodeProbe provides three functions to this matter. So how to use it?
 
@@ -107,3 +109,24 @@ Return Values
 | TIMEOUT | timeout to receive ARP Response from the host; it means there is no host at target IP |
 | ERRRECV | failed to receive frame from the network |
 | SUCCESS | the call was successful and MAC address of the host have been copied in the `mac` buffer |
+
+You must call the `arpman_delete_context()` after you done to free resources
+
+```c
+status_t arpman_delete_context(arpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to arpman_context_t that you've create with `arpman_create_context()` function |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRCLOS | close() failed to close the socket; weird problem |
+| SUCCESS | the resources have completely freed |
+
+---
+
+### Which TCP servies are active in the host?
