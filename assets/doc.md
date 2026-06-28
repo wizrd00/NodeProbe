@@ -36,17 +36,18 @@ Return type used by all module functions.
 
 ```c
 typedef enum {
-    SUCCESS,   /* operation completed successfully */
-    FAILURE,   /* generic failure */
-    TIMEOUT,   /* no response received within the timeout window */
-    INVALID,   /* inside usage not relative to outside */
-    ERRALOC,   /* memory allocation failed */
-    ERRSOCK,   /* socket creation failed */
-    ERRBIND,   /* socket bind failed */
-    ERRSEND,   /* sendto failed */
-    ERRRECV,   /* recvfrom failed */
-    ERRCLOS,   /* socket close failed */
-    ERRPOLL    /* poll failed */
+	SUCCESS,   /* operation completed successfully */
+	FAILURE,   /* generic failure */
+	TIMEOUT,   /* no response received within the timeout window */
+	INVALID,   /* inside usage not relative to outside */
+	ERRALOC,   /* memory allocation failed */
+	ERRTIME,   /* clock_gettime failed */
+	ERRSOCK,   /* socket creation failed */
+	ERRBIND,   /* socket bind failed */
+	ERRSEND,   /* sendto failed */
+	ERRRECV,   /* recvfrom failed */
+	ERRCLOS,   /* socket close failed */
+	ERRPOLL    /* poll failed */
 } status_t;
 ```
 
@@ -84,3 +85,24 @@ Return Values
 | ERRSOCK | socket() failed; most of the time the program doesn't have root access |
 | ERRBIND | bind() failed; most of the time the `ifindex` has invalid value |
 | SUCCESS | the call was successful |
+
+The main function for host discovery is the `arpman_mac_request()`.
+
+```c
+status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to arpman_context_t; all the members should have value for this function, it means `timeout`, `src_mac`, `out_mac`, `src_ip` and `dst_ip` |
+| mac | A pointer to a buffer with 6 bytes size; the function fills this buffer with host MAC address if the host exists, you need this mac for other modules because they make their own Ethernet Frame and don't let the *kernel* to resolv the MAC of the host |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRSEND | |
+| ERRTIME | |
+| ERRPOLL | |
+| TIMEOUT | |
+| ERRRECV | |

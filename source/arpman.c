@@ -66,7 +66,7 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 			break;
 		LOGW("The received datagram is invalid, trying again...");
 	}
-	memcpy(mac, res_header.sha, (size_t) 6);
+	memcpy((void *) mac, (void *) res_header.sha, (size_t) 6);
 	return _stat;
 
 }
