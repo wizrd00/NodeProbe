@@ -7,8 +7,8 @@ NodeProbe is used by including a single header and linking against the shared li
 ```
 
 #### How to link it?
-It is possible to build the library with *pcc* or *gcc*.
-It also possible to link the library with *musl* or *glibc*
+It is possible to build the library with *pcc* or *gcc*.  
+It also possible to link the library with *musl* or *glibc*.  
 The Makefile detect the libc automatically.
 
 The second part of library name indicates its libc.  
