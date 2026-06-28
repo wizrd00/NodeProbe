@@ -101,8 +101,9 @@ Arguments
 Return Values
 | Status | Description |
 | --- | --- |
-| ERRSEND | |
-| ERRTIME | |
-| ERRPOLL | |
-| TIMEOUT | |
-| ERRRECV | |
+| ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
+| ERRTIME | calling clock_gettime() was unsuccessful |
+| ERRPOLL | calling poll() was unsuccessful or pfd.revents had wrong value |
+| TIMEOUT | timeout to receive ARP Response from the host; it means there is no host at target IP |
+| ERRRECV | failed to receive frame from the network |
+| SUCCESS | the call was successful and MAC address of the host have been copied in the `mac` buffer |
