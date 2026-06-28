@@ -6,10 +6,10 @@ NodeProbe is used by including a single header and linking against the shared li
 #include "nodeprobe.h"
 ```
 
-#### How to link it?
+### How to link it?
 It is possible to build the library with *pcc* or *gcc*.  
 It also possible to link the library with *musl* or *glibc*.  
-The Makefile detect the libc automatically.
+The Makefile detects the libc automatically.
 
 The second part of library name indicates its libc.  
 if the name is *libnodeprobe-musl.so* it means you can only use it with musl libc.  
