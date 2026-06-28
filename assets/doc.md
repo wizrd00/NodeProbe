@@ -127,6 +127,94 @@ Return Values
 | ERRCLOS | close() failed to close the socket; weird problem |
 | SUCCESS | the resources have completely freed |
 
+#### Example
+```c
+#include "nodeprobe.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <net/if.h>
+
+#define IFNAME "wlan0"
+#define TIMEOUT 2000
+#define SRC_MAC {162, 37, 206, 23, 231, 167} // A2:25:CE:17:E7:A7
+#define DST_MAC {255, 255, 255, 255, 255, 255} // FF:FF:FF:FF:FF:FF
+#define SRC_IP {192, 168, 1, 1} // 192.168.1.1
+#define IP_RANGE_START 1
+#define IP_RANGE_END 224
+
+int main(int argc, char **argv)
+{
+	unsigned int ifindex = if_nametoindex(IFNAME);
+	if (ifindex == 0) {
+		perror("failed to get interface index");
+		return 1;
+	}
+
+	arpman_context_t arp_context = {
+		.ifindex = (int) ifindex,
+		.timeout = TIMEOUT,
+		.src_mac = SRC_MAC,
+		.out_mac = DST_MAC,
+		.src_ip = SRC_IP,
+		.dst_ip = {192, 168, 2, 0}
+	};
+
+	uint8_t mac[6];
+
+	// creating context
+
+	if (arpman_create_context(&arp_context) != SUCCESS) {
+		perror("arpman_create_context() failed");
+		return 2;
+	}
+
+	// discovering hosts from range 192.168.2.1 to 192.168.2.224
+
+	for (uint8_t i = (uint8_t) IP_RANGE_START; i <= (uint8_t) IP_RANGE_END; i++) {
+		arp_context.dst_ip[3] = i;
+		switch (arpman_mac_request(&arp_context, mac)) {
+		case SUCCESS :
+			printf("[ALIVE] MAC address of the host with IP 192.168.2.%d is %X:%X:%X:%X:%X:%X\n", i, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+			break;
+		case TIMEOUT :
+			printf("[DEAD] there is no host with IP 192.168.2.%d\n", i);
+			break;
+		default :
+			printf("[UKNOWN] an error occured\n");
+			break;
+		}
+	}
+
+	// deleting the context and freeing resources
+
+	arpman_delete_context(&arp_context);
+	return 0;
+}
+```
+
 ---
 
-### Which TCP servies are active in the host?
+### How to ping the host?
+The *icmpman* module required.
+
+#### Types
+```c
+typedef struct {
+	int sockfd;              /* managed by icmpman_create_context / icmpman_delete_context */
+	int ifindex;             /* network interface index */
+	int timeout;             /* operation timeout in ms*/
+	unsigned short id;       /* ICMP echo identifier, used to match replies to requests */
+	size_t mtu_size;         /* MTU of the interface, use `ioctl` with `SIOCGIFMTU`*/
+	unsigned char src_mac[6];
+	unsigned char dst_mac[6];
+	unsigned char src_ip[4];
+	unsigned char dst_ip[4];
+} icmpman_context_t;
+```
+
+#### Functions
+Call `icmpman_create_context()` to initiate the module
+
+```c
+status_t icmpman_create_context(icmpman_context_t *restrict context);
+```
