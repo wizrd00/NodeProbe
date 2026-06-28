@@ -61,7 +61,7 @@ typedef struct {
 	int timeout;             /* operation timeout in ms*/
 	unsigned char src_mac[6]; /* MAC address of the sending interface */
 	unsigned char out_mac[6]; /* destination MAC for the Ethernet frame (usually broadcast: ff:ff:ff:ff:ff:ff) */
-	unsigned char src_ip[4];  /* source IPv4 address
+	unsigned char src_ip[4];  /* source IPv4 address */
 	unsigned char dst_ip[4];  /* target IPv4 address to resolve */
 } arpman_context_t;
 ```
@@ -76,11 +76,11 @@ status_t arpman_create_context(arpman_context_t *restrict context);
 Arguments
 | Argument | Description |
 | --- | --- |
-| context | A pointer to arpman_context_t; the `ifindex` member is necessary to have a valid value and the function sets the `sockfd` |
+| context | A pointer to arpman_context_t; The `ifindex` member is necessary to have a valid value and the function sets the `sockfd` |
 
-Return
+Return Values
 | Status | Description |
 | --- | --- |
-| ERRSOCK | socket() failed; most of the time the program doesn't root access |
-| ERRBIND | bind() failed; most of the time the `ifindex` is an invalid number |
+| ERRSOCK | socket() failed; most of the time the program doesn't have root access |
+| ERRBIND | bind() failed; most of the time the `ifindex` has invalid value |
 | SUCCESS | the call was successful |
