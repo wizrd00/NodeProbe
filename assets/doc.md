@@ -239,6 +239,8 @@ Return Values
 | ERRBIND | `bind()` failed to bind on the interface you've passed |
 | SUCCESS | context successfully created |
 
+---
+
 The main function to perform an echo-reply icmp operation.
 
 ```c
@@ -261,6 +263,99 @@ Return Values
 | ERRRECV | failed to receive frame from the network |
 | SUCCESS | the call was successful and the host is *pingable* |
 
+---
+
 To free allocated resources you must call the function below
 
+```c
+status_t icmpman_delete_context(icmpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `icmpman_context_t` that you've create with `icmpman_create_context()` function |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRCLOS | `close()` failed to close the socket |
+| SUCCESS | the resources have completely freed |
+
+---
+
+#### Example
+```c
+#include "nodeprobe.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+
+#define IFNAME "wlan0"
+#define TIMEOUT 2000
+#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, exa7} // A2:25:CE:17:E7:A7
+#define DST_MAC {0x5e, 0x79, 0xe0, 0x4e, 0x10, 0x86} // 5E:79:E0:4E:10:86 : the MAC address you've resolved via arpman module
+#define SRC_IP {192, 168, 1, 1} // 192.168.1.1
+#define DST_IP {192, 168, 2, 51} // 192.168.2.51
+#define IP_RANGE_START 1
+#define IP_RANGE_END 224
+
+int main(int argc, char **argv)
+{
+	unsigned int ifindex = if_nametoindex(IFNAME);
+	if (ifindex == 0) {
+		perror("failed to get interface index");
+		return 1;
+	}
+
+	srand(1);
+	icmp_context_t icmp_context = {
+		.ifindex = ifindex,
+		.timeout = TIMEOUT,
+		.src_mac = SRC_MAC,
+		.dst_mac = DST_MAC,
+		.src_ip = SRC_IP,
+		.dst_ip = DST_IP
+	};
+
+	// creating context
+
+	if (icmpman_create_context(&icmp_context) != SUCCESS) {
+		perror("icmpman_create_context() failed");
+		return 2;
+	}
+
+	// get mtu size
+	
+	struct ifreq ifr = {
+		.ifr_name = IFNAME
+	};
+	if (ioctl(icmp_context.sockfd, SIOCGIFMTU, &ifr) == -1) {
+		perror("ioctl() failed to get mtu size of the interface");
+		return 3;
+	}
+	icmp_context.mtu_size = (size_t) ifr.ifr_mtu;
+
+	// pinging the host with IP 192.168.2.51
+
+	switch (icmpman_echo_request(&icmp_context)) {
+	case SUCCESS :
+		printf("[PINGABLE] successful icmp echo-reply with host at IP 192.168.2.51\n");
+		break;
+	case TIMEOUT :
+		printf("[UNPINGABLE] the host at IP 192.168.2.51 didn't response to our icmp echo message\n");
+		break;
+	default :
+		printf("[UKNOWN] an error occured\n");
+		break;
+	}
+}
+
+	// deleting the context and freeing resources
+
+	icmpman_delete_context(&icmp_context);
+	return 0;
+}
 ```
