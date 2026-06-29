@@ -109,7 +109,7 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 		if ((size_t) recvfrom_ret < sizeof(tcp_header_t))
 			continue;
 		memcpy((void *) &res_tcp_header, (void *) (buffer + offset), sizeof(tcp_header_t));
-		if (check_sync_response(&res_tcp_header, &req_tcp_header) == SUCCESS)
+		if ((_stat = check_sync_response(&res_tcp_header, &req_tcp_header)) != INVALID)
 			break;
 	}
 	free((void *) buffer);
