@@ -108,7 +108,6 @@ typedef struct {
 	uint16_t chksum;
 	uint32_t src_addr;
 	uint32_t dst_addr;
-	uint8_t opts[];
 } ipv4_header_t;
 
 typedef struct {
@@ -138,7 +137,6 @@ typedef struct {
 	uint16_t win;
 	uint16_t chksum;
 	uint16_t urgt;
-	uint8_t opts[];
 } tcp_header_t;
 
 typedef struct {
