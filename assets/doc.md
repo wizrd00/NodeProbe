@@ -300,8 +300,6 @@ Return Values
 #define DST_MAC {0x5e, 0x79, 0xe0, 0x4e, 0x10, 0x86} // 5E:79:E0:4E:10:86 : the MAC address you've resolved via arpman module
 #define SRC_IP {192, 168, 1, 1} // 192.168.1.1
 #define DST_IP {192, 168, 2, 51} // 192.168.2.51
-#define IP_RANGE_START 1
-#define IP_RANGE_END 224
 
 int main(int argc, char **argv)
 {
@@ -315,6 +313,7 @@ int main(int argc, char **argv)
 	icmpman_context_t icmp_context = {
 		.ifindex = ifindex,
 		.timeout = TIMEOUT,
+		.id = (unsigned short) rand();
 		.src_mac = SRC_MAC,
 		.dst_mac = DST_MAC,
 		.src_ip = SRC_IP,
@@ -448,5 +447,79 @@ Return Values
 
 #### Example
 ```c
+#include "nodeprobe.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 
+#define IFNAME "wlan0"
+#define TIMEOUT 2000
+#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, 0xa7} // A2:25:CE:17:E7:A7
+#define DST_MAC {0x5e, 0x79, 0xe0, 0x4e, 0x10, 0x86} // 5E:79:E0:4E:10:86 : the MAC address you've resolved via arpman module
+#define SRC_IP {192, 168, 1, 1} // 192.168.1.1
+#define DST_IP {192, 168, 2, 51} // 192.168.2.51
+#define DST_PORT 22 // SSH port
+
+int main(int argc, char **argv)
+{
+	unsigned int ifindex = if_nametoindex(IFNAME);
+	if (ifindex == 0) {
+		perror("failed to get interface index");
+		return 1;
+	}
+
+	srand((int) time(NULL));
+	tcpman_context_t tcp_context = {
+		.ifindex = ifindex,
+		.timeout = TIMEOUT,
+		.src_mac = SRC_MAC,
+		.dst_mac = DST_MAC,
+		.src_ip = SRC_IP,
+		.dst_ip = DST_IP,
+		.src_port = (rand() % 0xffffffff),
+		.dst_port = DST_PORT
+	};
+
+	// creating context
+
+	if (tcpman_create_context(&tcp_context) != SUCCESS) {
+		perror("tcpman_create_context() failed");
+		return 2;
+	}
+
+	// get mtu size
+	
+	struct ifreq ifr = {
+		.ifr_name = IFNAME
+	};
+	if (ioctl(tcp_context.sockfd, SIOCGIFMTU, &ifr) == -1) {
+		perror("ioctl() failed to get mtu size of the interface");
+		return 3;
+	}
+	tcp_context.mtu_size = (size_t) ifr.ifr_mtu;
+
+	// detect active service on ssh port of the host at IP 192.168.2.51
+
+	switch (tcpman_sync_request(&tcp_context)) {
+	case SUCCESS :
+		printf("[ACTIVE] a ssh server detected on host at IP 192.168.2.51\n");
+		break;
+	case FAILURE :
+		printf("[DEACTIVE] there is no ssh server on host at IP 192.168.2.51\n");
+	case TIMEOUT :
+		printf("[DROPPED] a firewall has dropped the packet\n");
+		break;
+	default :
+		printf("[UKNOWN] an error occured\n");
+		break;
+	}
+
+	// deleting the context and freeing resources
+
+	tcpman_delete_context(&tcp_context);
+	return 0;
+}
 ```
