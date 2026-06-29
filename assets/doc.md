@@ -79,13 +79,13 @@ status_t arpman_create_context(arpman_context_t *restrict context);
 Arguments
 | Argument | Description |
 | --- | --- |
-| context | A pointer to arpman_context_t; The `ifindex` member is necessary to have a valid value and the function sets the `sockfd` |
+| context | A pointer to `arpman_context_t`; The `ifindex` member is necessary to have a valid value and the function sets the `sockfd` |
 
 Return Values
 | Status | Description |
 | --- | --- |
-| ERRSOCK | socket() failed; most of the time the program doesn't have root access |
-| ERRBIND | bind() failed; most of the time the `ifindex` has invalid value |
+| ERRSOCK | `socket()` failed; most of the time the program doesn't have root access |
+| ERRBIND | `bind()` failed; most of the time the `ifindex` has invalid value |
 | SUCCESS | the call was successful |
 
 The main function for host discovery is the `arpman_mac_request()`.
@@ -97,15 +97,15 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac);
 Arguments
 | Argument | Description |
 | --- | --- |
-| context | A pointer to arpman_context_t; all the members should have value for this function, it means `timeout`, `src_mac`, `out_mac`, `src_ip` and `dst_ip` |
+| context | A pointer to `arpman_context_t`; all the members should have value for this function, it means `timeout`, `src_mac`, `out_mac`, `src_ip` and `dst_ip` |
 | mac | A pointer to a buffer with 6 bytes size; the function fills this buffer with host MAC address if the host exists, you need this mac for other modules because they make their own Ethernet Frame and don't let the *kernel* to resolv the MAC of the host |
 
 Return Values
 | Status | Description |
 | --- | --- |
 | ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
-| ERRTIME | calling clock_gettime() was unsuccessful |
-| ERRPOLL | calling poll() was unsuccessful or pfd.revents had wrong value |
+| ERRTIME | calling `clock_gettime()` was unsuccessful |
+| ERRPOLL | calling `poll()` was unsuccessful or pfd.revents had wrong value |
 | TIMEOUT | timeout to receive ARP Response from the host; it means there is no host at target IP |
 | ERRRECV | failed to receive frame from the network |
 | SUCCESS | the call was successful and MAC address of the host have been copied in the `mac` buffer |
@@ -119,12 +119,12 @@ status_t arpman_delete_context(arpman_context_t *restrict context);
 Arguments
 | Argument | Description |
 | --- | --- |
-| context | A pointer to arpman_context_t that you've create with `arpman_create_context()` function |
+| context | A pointer to `arpman_context_t` that you've create with `arpman_create_context()` function |
 
 Return Values
 | Status | Description |
 | --- | --- |
-| ERRCLOS | close() failed to close the socket; weird problem |
+| ERRCLOS | `close()` failed to close the socket; weird problem |
 | SUCCESS | the resources have completely freed |
 
 #### Example
@@ -195,7 +195,8 @@ int main(int argc, char **argv)
 ---
 
 ### How to ping the host?
-The *icmpman* module required.
+The *icmpman* module required.  
+This module create an Ethernet Frame plus IPv4 Datagram and ICMP-ECHO message, and the *id* field in icmp echo header is the `id` member in `icmpman_context_t`, it means you must use different values per packet.
 
 #### Types
 ```c
@@ -213,8 +214,21 @@ typedef struct {
 ```
 
 #### Functions
-Call `icmpman_create_context()` to initiate the module
+Call `icmpman_create_context()` to initiate the module and allocate resources.
 
 ```c
 status_t icmpman_create_context(icmpman_context_t *restrict context);
 ```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `icmpman_context_t` which its `ifindex` member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRSOCK | the function failed to create socket; you need `CAP_NET_RAW` |
+| ERRBIND | `bind()` failed to bind on the interface you've passed |
+| SUCCESS | context successfully created |
+
