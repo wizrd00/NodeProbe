@@ -362,7 +362,7 @@ int main(int argc, char **argv)
 ---
 
 ### How to detect active TCP services on specific host?
-The *tcpman* module is required for this operation.  
+The *tcpman* module is required for this operation.
 
 #### Types
 ```c
@@ -410,7 +410,7 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context);
 Arguments
 | Argument | Description |
 | --- | --- |
-| context | A pointer to `icmpman_context_t`; all member must have a valid value before call |
+| context | A pointer to `tcpman_context_t`; all member must have a valid value before call |
 
 Return Values
 | Status | Description |
@@ -422,7 +422,7 @@ Return Values
 | TIMEOUT | timeout to receive TCP segment from the host; it means a firewall probably dropped the TCP SYN |
 | ERRRECV | failed to receive frame from the network |
 | FAILURE | there is no active service on the target port |
-| SUCCESS | the call was successful and there is ac active service on target port |
+| SUCCESS | the call was successful and there is an active service on target port |
 
 ---
 
@@ -520,6 +520,167 @@ int main(int argc, char **argv)
 	// deleting the context and freeing resources
 
 	tcpman_delete_context(&tcp_context);
+	return 0;
+}
+```
+
+---
+
+### How to detect active UDP services on specific host?
+The *udpman* module is required for this operation.
+
+#### Types
+```c
+typedef struct {
+	int sockfd;
+	int ifindex;
+	int timeout;
+	size_t mtu_size;
+	unsigned char src_mac[6];
+	unsigned char dst_mac[6];
+	unsigned char src_ip[4];
+	unsigned char dst_ip[4];
+	unsigned short src_port;
+	unsigned short dst_port;
+} udpman_context_t;
+```
+
+### Functions
+You must call the function below to initiate the module.
+
+```c
+status_t udpman_create_context(udpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `udpman_context_t` which its `ifindex` member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRSOCK | the function failed to create socket; you need `CAP_NET_RAW` |
+| ERRBIND | `bind()` failed to bind on the interface you've passed |
+| SUCCESS | context successfully created |
+
+---
+
+The main function to perform the actions declared below
+
+```c
+status_t udpman_udp_request(udpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `udpman_context_t`; all member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRALOC | `calloc()` failed; probably you're out of memory |
+| ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
+| ERRTIME | calling `clock_gettime()` was unsuccessful |
+| ERRPOLL | calling `poll()` was unsuccessful or pfd.revents had wrong value |
+| ERRRECV | failed to receive frame from the network |
+| FAILURE | there is no active service on the target port; but is also possible that the ICMP Unreachable message have lost in network; therefore, it's better to repeat this operation several times |
+| SUCCESS | the call was successful and there is an active service on target port |
+
+---
+
+To free allocated resources you must call the function below
+
+```c
+status_t udpman_delete_context(udpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `udpman_context_t` that you've create with `udpman_create_context()` function |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRCLOS | `close()` failed to close the socket |
+| SUCCESS | the resources have completely freed |
+
+---
+
+#### Example
+```c
+#include "nodeprobe.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+
+#define IFNAME "wlan0"
+#define TIMEOUT 2000
+#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, 0xa7} // A2:25:CE:17:E7:A7
+#define DST_MAC {0x5e, 0x79, 0xe0, 0x4e, 0x10, 0x86} // 5E:79:E0:4E:10:86 : the MAC address you've resolved via arpman module
+#define SRC_IP {192, 168, 1, 1} // 192.168.1.1
+#define DST_IP {192, 168, 2, 51} // 192.168.2.51
+#define DST_PORT 67 // DHCP port
+
+int main(int argc, char **argv)
+{
+	unsigned int ifindex = if_nametoindex(IFNAME);
+	if (ifindex == 0) {
+		perror("failed to get interface index");
+		return 1;
+	}
+
+	srand((int) time(NULL));
+	udpman_context_t udp_context = {
+		.ifindex = ifindex,
+		.timeout = TIMEOUT,
+		.src_mac = SRC_MAC,
+		.dst_mac = DST_MAC,
+		.src_ip = SRC_IP,
+		.dst_ip = DST_IP,
+		.src_port = (rand() % 0xffffffff),
+		.dst_port = DST_PORT
+	};
+
+	// creating context
+
+	if (udpman_create_context(&udp_context) != SUCCESS) {
+		perror("udpman_create_context() failed");
+		return 2;
+	}
+
+	// get mtu size
+	
+	struct ifreq ifr = {
+		.ifr_name = IFNAME
+	};
+	if (ioctl(udp_context.sockfd, SIOCGIFMTU, &ifr) == -1) {
+		perror("ioctl() failed to get mtu size of the interface");
+		return 3;
+	}
+	udp_context.mtu_size = (size_t) ifr.ifr_mtu;
+
+	// detect active service on dhcp port of the host at IP 192.168.2.51
+
+	switch (udpman_udp_request(&udp_context)) {
+	case SUCCESS :
+		printf("[ACTIVE] a dhcp server detected on host at IP 192.168.2.51 (it's possible that a firewall silently has dropped the packet)\n");
+		break;
+	case FAILURE :
+		printf("[DEACTIVE] there is no dhcp server on host at IP 192.168.2.51\n");
+	default :
+		printf("[UKNOWN] an error occured\n");
+		break;
+	}
+
+	// deleting the context and freeing resources
+
+	udpman_delete_context(&udp_context);
 	return 0;
 }
 ```

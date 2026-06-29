@@ -87,7 +87,7 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 			CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed; %s", strerror(errno));
 		case 0 :
 			free((void *) buffer);
-			return _stat;
+			return _stat = SUCCESS;
 		case 1 :
 			if ((pfd.revents & POLLIN) != POLLIN)
 				CHECK_STAT_FREE(ERRPOLL, buffer, "poll() failed and pfd.revents = %d", pfd.revents);
