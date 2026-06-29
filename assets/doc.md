@@ -296,7 +296,7 @@ Return Values
 
 #define IFNAME "wlan0"
 #define TIMEOUT 2000
-#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, exa7} // A2:25:CE:17:E7:A7
+#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, 0xa7} // A2:25:CE:17:E7:A7
 #define DST_MAC {0x5e, 0x79, 0xe0, 0x4e, 0x10, 0x86} // 5E:79:E0:4E:10:86 : the MAC address you've resolved via arpman module
 #define SRC_IP {192, 168, 1, 1} // 192.168.1.1
 #define DST_IP {192, 168, 2, 51} // 192.168.2.51
@@ -312,7 +312,7 @@ int main(int argc, char **argv)
 	}
 
 	srand((int) time(NULL));
-	icmp_context_t icmp_context = {
+	icmpman_context_t icmp_context = {
 		.ifindex = ifindex,
 		.timeout = TIMEOUT,
 		.src_mac = SRC_MAC,
@@ -352,7 +352,6 @@ int main(int argc, char **argv)
 		printf("[UKNOWN] an error occured\n");
 		break;
 	}
-}
 
 	// deleting the context and freeing resources
 
