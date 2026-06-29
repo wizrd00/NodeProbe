@@ -136,8 +136,8 @@ Return Values
 
 #define IFNAME "wlan0"
 #define TIMEOUT 2000
-#define SRC_MAC {162, 37, 206, 23, 231, 167} // A2:25:CE:17:E7:A7
-#define DST_MAC {255, 255, 255, 255, 255, 255} // FF:FF:FF:FF:FF:FF
+#define SRC_MAC {0xa2, 0x25, 0xce, 0x17, 0xe7, exa7} // A2:25:CE:17:E7:A7
+#define DST_MAC {0xff, 0xff, 0xff, 0xff, 0xff, 0xff} // FF:FF:FF:FF:FF:FF
 #define SRC_IP {192, 168, 1, 1} // 192.168.1.1
 #define IP_RANGE_START 1
 #define IP_RANGE_END 224
