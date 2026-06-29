@@ -359,3 +359,94 @@ int main(int argc, char **argv)
 	return 0;
 }
 ```
+
+---
+
+### How to detect active TCP services on specific host?
+The *tcpman* module is required for this operation.  
+
+#### Types
+```c
+typedef struct {
+	int sockfd;
+	int ifindex;
+	int timeout;
+	size_t mtu_size;
+	unsigned char src_mac[6];
+	unsigned char dst_mac[6];
+	unsigned char src_ip[4];
+	unsigned char dst_ip[4];
+	unsigned short src_port;
+	unsigned short dst_port;
+} tcpman_context_t;
+```
+
+### Functions
+You must call the function below to initiate the module.
+
+```c
+status_t tcpman_create_context(tcpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `tcpman_context_t` which its `ifindex` member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRSOCK | the function failed to create socket; you need `CAP_NET_RAW` |
+| ERRBIND | `bind()` failed to bind on the interface you've passed |
+| SUCCESS | context successfully created |
+
+---
+
+The main function to perform the actions declared below
+
+```c
+status_t tcpman_sync_request(tcpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `icmpman_context_t`; all member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRALOC | `calloc()` failed; probably you're out of memory |
+| ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
+| ERRTIME | calling `clock_gettime()` was unsuccessful |
+| ERRPOLL | calling `poll()` was unsuccessful or pfd.revents had wrong value |
+| TIMEOUT | timeout to receive TCP segment from the host; it means a firewall probably dropped the TCP SYN |
+| ERRRECV | failed to receive frame from the network |
+| FAILURE | there is no active service on the target port |
+| SUCCESS | the call was successful and there is ac active service on target port |
+
+---
+
+To free allocated resources you must call the function below
+
+```c
+status_t tcpman_delete_context(tcpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `tcpman_context_t` that you've create with `tcpman_create_context()` function |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRCLOS | `close()` failed to close the socket |
+| SUCCESS | the resources have completely freed |
+
+---
+
+#### Example
+```c
+
+```
