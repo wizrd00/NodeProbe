@@ -290,6 +290,7 @@ Return Values
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 
@@ -310,7 +311,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	srand(1);
+	srand((int) time(NULL));
 	icmp_context_t icmp_context = {
 		.ifindex = ifindex,
 		.timeout = TIMEOUT,

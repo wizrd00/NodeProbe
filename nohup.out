@@ -2,3 +2,9 @@ ATTENTION: default value of option mesa_glthread overridden by environment.
 console.error: [Exception... "Component is not available"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "<unknown>"  data: no]
 console.error: [Exception... "Component is not available"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "<unknown>"  data: no]
 console.error: [Exception... "Component is not available"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "<unknown>"  data: no]
+JavaScript warning: https://duckduckgo.com/dist/util/u.2b79e5bbb6612ddc1a87.js, line 3: Script terminated by timeout at:
+getConfiguredParameters@https://duckduckgo.com/dist/util/u.2b79e5bbb6612ddc1a87.js:3:45611
+fire@https://duckduckgo.com/dist/util/u.2b79e5bbb6612ddc1a87.js:3:44326
+ready/<@https://duckduckgo.com/dist/g.9cf1ff6620c7b0c63500.js:3:214785
+
+console.error: [Exception... "Component is not available"  nsresult: "0x80040111 (NS_ERROR_NOT_AVAILABLE)"  location: "<unknown>"  data: no]
