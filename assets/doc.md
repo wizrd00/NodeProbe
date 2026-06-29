@@ -88,6 +88,8 @@ Return Values
 | ERRBIND | `bind()` failed; most of the time the `ifindex` has invalid value |
 | SUCCESS | the call was successful |
 
+---
+
 The main function for host discovery is the `arpman_mac_request()`.
 
 ```c
@@ -103,12 +105,15 @@ Arguments
 Return Values
 | Status | Description |
 | --- | --- |
+| ERRALOC | `calloc()` failed; probably you're out of memory |
 | ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
 | ERRTIME | calling `clock_gettime()` was unsuccessful |
 | ERRPOLL | calling `poll()` was unsuccessful or pfd.revents had wrong value |
 | TIMEOUT | timeout to receive ARP Response from the host; it means there is no host at target IP |
 | ERRRECV | failed to receive frame from the network |
 | SUCCESS | the call was successful and MAC address of the host have been copied in the `mac` buffer |
+
+---
 
 You must call the `arpman_delete_context()` after you done to free resources
 
@@ -126,6 +131,8 @@ Return Values
 | --- | --- |
 | ERRCLOS | `close()` failed to close the socket; weird problem |
 | SUCCESS | the resources have completely freed |
+
+---
 
 #### Example
 ```c
@@ -232,3 +239,28 @@ Return Values
 | ERRBIND | `bind()` failed to bind on the interface you've passed |
 | SUCCESS | context successfully created |
 
+The main function to perform an echo-reply icmp operation.
+
+```c
+status_t icmpman_echo_request(icmpman_context_t *restrict context);
+```
+
+Arguments
+| Argument | Description |
+| --- | --- |
+| context | A pointer to `icmpman_context_t`; all member must have a valid value before call |
+
+Return Values
+| Status | Description |
+| --- | --- |
+| ERRALOC | `calloc()` failed; probably you're out of memory |
+| ERRSEND | failed to send the frame over the network; make sure you pass write pointer to the function, check the logfile to troubleshoot |
+| ERRTIME | calling `clock_gettime()` was unsuccessful |
+| ERRPOLL | calling `poll()` was unsuccessful or pfd.revents had wrong value |
+| TIMEOUT | timeout to receive ICMP Reply from the host; it means the host isn't *pingable* |
+| ERRRECV | failed to receive frame from the network |
+| SUCCESS | the call was successful and the host is *pingable* |
+
+To free allocated resources you must call the function below
+
+```
