@@ -693,6 +693,10 @@ int main(int argc, char **argv)
 The library implements a *Logging* module has called *logman*.  
 This module uses `mmap()` to map the logfile. Therefore, the logfile is also a ring-buffer so when the logger reaches to end of the logfile, it goes back at begining of the file and oldest log replaced by newest logs.
 
+The logs are fixed-size structures, so the logfile contains the logs in binary and its not human-readable. Therefore, to read the logs in human-readable format I've written a Python script in path : [`tools/logshow.py`](https://github.com/wizrd00/NodeProbe/blob/main/tools/logshow.py)
+
+An important thing is that, the library is Thread-Safe to prevent simultanceous writes on the *fd*.
+
 #### How to use it?
 It's actually simple, you initiate the module by calling `logman_create_context(fd, count)` and use predefind macros, here is an example :
 
@@ -700,9 +704,20 @@ It's actually simple, you initiate the module by calling `logman_create_context(
 #include "nodeprobe.h"
 #include <stdio.h>
 
+#define LOG_COUNT 1024 // it means the logfile ring-buffer is only capable of keeping 1024 logs
+
 int main(int argc, char **argv)
 {
-	
+	// first you need to provide a regular file with (O_RDWR | O_CREAT | O_TRUNC) flags or "w+"
+	// it's also possible to use POSIX shared object, see `shm_open` man page
+	FILE *logfile = fopen("logfile.log", "w+");
+	if (logfile == NULL) {
+		perror("unable to create a regular with file with mode w+");
+		return 1;
+	}
+
+	// creating context
+	if (logman_create_context(fileno(logfile), 
 }
 
 ### My Own Interface
