@@ -693,7 +693,12 @@ int main(int argc, char **argv)
 The library implements a *Logging* module has called *logman*.  
 This module uses `mmap()` to map the logfile. Therefore, the logfile is also a ring-buffer so when the logger reaches to end of the logfile, it goes back at begining of the file and oldest log replaced by newest logs.
 
-The logs are fixed-size structures, so the logfile contains the logs in binary and its not human-readable. Therefore, to read the logs in human-readable format I've written a Python script in path : [`tools/logshow.py`](https://github.com/wizrd00/NodeProbe/blob/main/tools/logshow.py)
+The logs are fixed-size structures, so the logfile contains the logs in binary and its not human-readable. Therefore, to read the logs in human-readable format I've written a Python script [`tools/logshow.py`](https://github.com/wizrd00/NodeProbe/blob/main/tools/logshow.py) and here its usage :
+
+```sh
+# goto in NodeProbe dir path
+./tools/logshow.py <logfile>
+```
 
 An important thing is that, the library is Thread-Safe to prevent simultanceous writes on the *fd*.
 
