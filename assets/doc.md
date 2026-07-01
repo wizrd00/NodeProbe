@@ -509,6 +509,7 @@ int main(int argc, char **argv)
 		break;
 	case FAILURE :
 		printf("[DEACTIVE] there is no ssh server on host at IP 192.168.2.51\n");
+		break;
 	case TIMEOUT :
 		printf("[DROPPED] a firewall has dropped the packet\n");
 		break;
@@ -673,6 +674,7 @@ int main(int argc, char **argv)
 		break;
 	case FAILURE :
 		printf("[DEACTIVE] there is no dhcp server on host at IP 192.168.2.51\n");
+		break;
 	default :
 		printf("[UKNOWN] an error occured\n");
 		break;
@@ -685,5 +687,23 @@ int main(int argc, char **argv)
 }
 ```
 
-### My Interface
+---
+
+### What about Logs?
+The library implements a *Logging* module has called *logman*.  
+This module uses `mmap()` to map the logfile. Therefore, the logfile is also a ring-buffer so when the logger reaches to end of the logfile, it goes back at begining of the file and oldest log replaced by newest logs.
+
+#### How to use it?
+It's actually simple, you initiate the module by calling `logman_create_context(fd, count)` and use predefind macros, here is an example :
+
+```c
+#include "nodeprobe.h"
+#include <stdio.h>
+
+int main(int argc, char **argv)
+{
+	
+}
+
+### My Own Interface
 I'm currently developing a TUI Interface for this library with Python and [textual](https://github.com/Textualize/textual) framework and it's called [*NodeProbe-TUI*](https://github.com/wizrd00/NodeProbe-TUI).
