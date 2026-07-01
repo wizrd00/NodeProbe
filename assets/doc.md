@@ -722,7 +722,32 @@ int main(int argc, char **argv)
 	}
 
 	// creating context
-	if (logman_create_context(fileno(logfile), 
+	if (logman_create_context(fileno(logfile), LOG_COUNT) != 0) {
+		perror("logman_create_context() failed");
+		return 2;
+	}
+
+	/* the library support 4 types of logs -> TRACE, DEBUG, WARNN, ERROR
+	   with this macros
+	   TRACE -> LOGT(fmt)
+	   DEBUG -> LOGD(fmt)
+	   WARNN -> LOGW(fmt)
+	   ERROR -> LOGE(fmt)
+
+	   but it is also possible to use logging(level, mod, pos, fmt, ...) function to write custom logs
+
+	   level must be a string with size LEVELSIZE
+	   mod must be a string with size MODSIZE (short for module like name of the module file)
+	   pos as same as mod (short for position like function name)
+	   fmt, ... must be a string with size MSGSIZE (it's a format string just like printf) */
+
+	LOGW("example of warning log");
+
+	logging("HELLO", "example.c", "main()", "here an example of using this function in line %d", __LINE__);
+
+	// to free resources calling this function is mandatory
+	logman_delete_context();
+	return 0;
 }
 
 ### My Own Interface
