@@ -15,10 +15,11 @@ else
 $(error unsupported libc : $(LIBC))
 endif
 
-LOGMAN_MACROS := -DLOG_TRACE -DLOG_DEBUG -DLOG_WARNN -DLOG_ERROR
+LOGMAN_MACROS := -DLOG_WARNN -DLOG_ERROR
+DEBUG_LOGMAN_MACROS := -DLOG_TRACE -DLOG_DEBUG -DLOG_WARNN -DLOG_ERROR
 
 ifeq ($(CC), pcc)
-CFLAGS := -std=c99 -O3 -fPIC -shared -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread $(LOGMAN_MACROS)
+CFLAGS := -std=c99 -O3 -fPIC -shared -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread
 ifeq ($(wildcard $(LIB_DIR)/*), $())
 LIB_FLAGS :=
 else
@@ -26,7 +27,7 @@ LIB_FLAGS := -Wl,--library-path=$(LIB_DIR),-rpath=$(LIB_DIR)
 endif
 else ifeq ($(CC), gcc)
 SPECIAL_OPTS = -DARPHRD_ETHER=1
-CFLAGS := -std=c99 -O3 -fPIC -shared -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(LOGMAN_MACROS) $(SPECIAL_OPTS)
+CFLAGS := -std=c99 -O3 -fPIC -shared -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(SPECIAL_OPTS)
 ifeq ($(wildcard $(LIB_DIR)/*), $())
 LIG_FLAGS :=
 else
@@ -35,6 +36,8 @@ endif
 else
 $(error unsupported compiler : $(CC))
 endif
+
+DEBUG_CFLAGS := $(CFLAGS) -g
 
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 HDR_FILES := $(wildcard $(INC_DIR)/*.h)
@@ -46,9 +49,13 @@ POINTER_SYM := "\e[91m->\e[0m"
 
 $(NODEPROBE) : $(BIN_DIR) $(OBJ_FILES) $(HDR_FILES)
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[96mlinking modules into" $@ "\e[0m"
-	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES) $(LIB_FLAGS)
+	$(CC) $(CFLAGS) $(LOGMAN_MACROS) -o $@ $(OBJ_FILES) $(LIB_FLAGS)
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[93mstrip" $@ "\e[0m"
-	#@strip $@
+	@strip $@
+
+debug : $(BIN_DIR) $(OBJ_FILES) $(HDR_FILES)
+	@/usr/bin/echo -e $(POINTER_SYM) "\e[96mlinking modules into" $(NODEPROBE) "\e[0m"
+	$(CC) $(DEBUG_CFLAGS) $(DEBUG_LOGMAN_MACROS) -o $(NODEPROBE) $(OBJ_FILES) $(LIB_FLAGS)
 
 $(BIN_DIR) :
 	@mkdir -p $(BIN_DIR)
