@@ -9,7 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include <pthread.h>
+#include <semaphore.h>
 
 #define LOGERROR_TEXT "\nError(logger) : %s, %s\n\n"
 #define LOGFILE_NAMESIZE 32
@@ -35,7 +35,7 @@ typedef struct {
 	size_t pos;
 	size_t size;
 	unsigned long logcount;
-	pthread_mutex_t mutex;
+	sem_t sem;
 } logman_context_t;
 
 typedef struct {

@@ -1,1 +1,0 @@
-use POSIX semaphore instead of pthread mutex for logman

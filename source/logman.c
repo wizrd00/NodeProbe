@@ -5,8 +5,7 @@ logman_context_t logc = {
 	.buffer = NULL,
 	.pos = 0UL,
 	.size = 0UL,
-	.logcount = 0UL,
-	.mutex = PTHREAD_MUTEX_INITIALIZER
+	.logcount = 0UL
 };
 
 static char *sstrncpy(char *dst, const char *src, size_t dsize)
@@ -48,6 +47,10 @@ int logman_create_context(int fd, size_t count)
 		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
 		return -1;
 	}
+	if (sem_init(&logc.sem, 0, 1) == -1) {
+		fprintf(stderr, "function %s() failed at line %d; %s\n", __func__, __LINE__, strerror(errno));
+		return -1;
+	}
 	return 0;
 }
 
@@ -77,8 +80,10 @@ void logging(const char *level, const char *mod, const char *pos, const char *fm
 	sstrncpy(logmsg.msg, msg, MSGSIZE);
 	va_end(ap);
 	logc.logcount++;
-	pthread_mutex_lock(&logc.mutex);
+	if (sem_wait(&logc.sem) == -1)
+		return;
 	append_log(logmsg);
-	pthread_mutex_unlock(&logc.mutex);
+	if (sem_post(&logc.sem) == -1)
+		fprintf(stderr, "[CRITICAL ERROR] sem_post() failed\n");
 	return;
 }
