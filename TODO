@@ -1,1 +1,1 @@
-Use better method to validate incoming frame instead of current method.
+use POSIX semaphore instead of pthread mutex for logman

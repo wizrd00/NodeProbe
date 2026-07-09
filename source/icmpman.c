@@ -51,9 +51,9 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 	CHECK_NOTEQUAL(buffer, NULL, ERRALOC, "calloc() failed to allocate %zu bytes; %s", context->mtu_size, strerror(errno));
 	uint32_t src_ip = ((uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24);
 	uint32_t dst_ip = ((uint32_t) context->dst_ip[0] | (uint32_t) context->dst_ip[1] << 8 | (uint32_t) context->dst_ip[2] << 16 | (uint32_t) context->dst_ip[3] << 24);
-	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
-	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(ICMPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_ICMPV4, src_ip, dst_ip);
-	icmpv4_echo_header_t res_icmp_header, req_icmp_header = ICMPV4_ECHO_DEFAULT_HEADER(context->id);
+	ethernet_header_t req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
+	ipv4_header_t req_ip_header = IPV4_DEFAULT_HEADER(ICMPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_ICMPV4, src_ip, dst_ip);
+	icmpv4_echo_header_t req_icmp_header = ICMPV4_ECHO_DEFAULT_HEADER(context->id);
 	struct sockaddr_ll req_addr = ICMPV4_ECHO_REQUEST_DEFAULT_ADDR();
 	struct timespec start_tp, now_tp;
 	struct pollfd pfd = {
@@ -90,22 +90,19 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 		offset = 0;
 		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
 			continue;
-		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM((ethernet_header_t *) buffer))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
 		offset += sizeof(ethernet_header_t);
 		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
 			continue;
-		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		if (!CHECK_INCLUDE_ICMP_MESSAGE(res_ip_header))
+		if (!CHECK_INCLUDE_ICMP_MESSAGE((ipv4_header_t *) (buffer + offset)))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		offset += sizeof(ipv4_header_t);
 		if ((size_t) recvfrom_ret < sizeof(icmpv4_echo_header_t))
 			continue;
-		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_echo_header_t));
-		if (check_echo_response(&res_icmp_header, &req_icmp_header) == SUCCESS)
+		if (check_echo_response((icmpv4_echo_header_t *) (buffer + offset), &req_icmp_header) == SUCCESS)
 			break;
 	}
 	free((void *) buffer);

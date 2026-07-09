@@ -55,9 +55,9 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 	CHECK_NOTEQUAL(buffer, NULL, ERRALOC, "calloc() failed to allocate %zu bytes; %s", context->mtu_size, strerror(errno));
 	uint32_t src_ip = ((uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24);
 	uint32_t dst_ip = ((uint32_t) context->dst_ip[0] | (uint32_t) context->dst_ip[1] << 8 | (uint32_t) context->dst_ip[2] << 16 | (uint32_t) context->dst_ip[3] << 24);
-	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
-	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(TCPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_TCP, src_ip, dst_ip);
-	tcp_header_t res_tcp_header, req_tcp_header = TCP_SYNC_DEFAULT_HEADER(context->src_port, context->dst_port);
+	ethernet_header_t req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
+	ipv4_header_t req_ip_header = IPV4_DEFAULT_HEADER(TCPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_TCP, src_ip, dst_ip);
+	tcp_header_t req_tcp_header = TCP_SYNC_DEFAULT_HEADER(context->src_port, context->dst_port);
 	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, PROTO_TCP, sizeof(tcp_header_t));
 	struct sockaddr_ll req_addr = TCP_SYNC_REQUEST_DEFAULT_ADDR();
 	struct timespec start_tp, now_tp;
@@ -94,22 +94,19 @@ status_t tcpman_sync_request(tcpman_context_t *restrict context)
 		offset = 0;
 		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
 			continue;
-		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM((ethernet_header_t *) buffer))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
 		offset += sizeof(ethernet_header_t);
 		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
 			continue;
-		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		if (!CHECK_INCLUDE_TCP_SEGMENT(res_ip_header))
+		if (!CHECK_INCLUDE_TCP_SEGMENT((ipv4_header_t *) (buffer + offset)))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		offset += sizeof(ipv4_header_t);
 		if ((size_t) recvfrom_ret < sizeof(tcp_header_t))
 			continue;
-		memcpy((void *) &res_tcp_header, (void *) (buffer + offset), sizeof(tcp_header_t));
-		if ((_stat = check_sync_response(&res_tcp_header, &req_tcp_header)) != INVALID)
+		if ((_stat = check_sync_response((tcp_header_t *) (buffer + offset), &req_tcp_header)) != INVALID)
 			break;
 	}
 	free((void *) buffer);

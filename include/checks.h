@@ -68,8 +68,8 @@
 #define CHECK_GREATER_EQUAL_CLOSE(val0, val1, stat, ffd, ...)\
 	do {if (val0 < val1) {LOGE("(" #stat ")" " " __VA_ARGS__); close(ffd); return _stat = stat;}} while(0)
 
-#define CHECK_INCLUDE_IPV4_DATAGRAM(_eth_header) (_eth_header.type == htons((uint16_t) PROTO_IPV4))
-#define CHECK_INCLUDE_ICMP_MESSAGE(_ip_header) (_ip_header.proto == (uint8_t) PROTO_ICMPV4)
-#define CHECK_INCLUDE_TCP_SEGMENT(_ip_header) (_ip_header.proto == (uint8_t) PROTO_TCP)
+#define CHECK_INCLUDE_IPV4_DATAGRAM(_eth_header) ((_eth_header)->type == htons((uint16_t) PROTO_IPV4))
+#define CHECK_INCLUDE_ICMP_MESSAGE(_ip_header) ((_ip_header)->proto == (uint8_t) PROTO_ICMPV4)
+#define CHECK_INCLUDE_TCP_SEGMENT(_ip_header) ((_ip_header)->proto == (uint8_t) PROTO_TCP)
 
 #endif

@@ -97,22 +97,21 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 		offset = 0;
 		if ((size_t) recvfrom_ret < sizeof(ethernet_header_t))
 			continue;
-		memcpy((void *) &res_eth_header, (void *) buffer, sizeof(ethernet_header_t));
-		if (!CHECK_INCLUDE_IPV4_DATAGRAM(res_eth_header))
+		if (!CHECK_INCLUDE_IPV4_DATAGRAM((ethernet_header_t *) buffer))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ethernet_header_t);
 		offset += sizeof(ethernet_header_t);
 		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
 			continue;
 		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
-		if (!CHECK_INCLUDE_ICMP_MESSAGE(res_ip_header))
+		if (!CHECK_INCLUDE_ICMP_MESSAGE((ipv4_header_t *) (buffer + offset)))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		offset += sizeof(ipv4_header_t);
 		if ((size_t) recvfrom_ret < sizeof(icmpv4_unreachable_header_t))
 			continue;
 		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_unreachable_header_t));
-		if (check_icmp_response(&res_icmp_header, &req_udp_header) == SUCCESS) {
+		if (check_icmp_response((icmpv4_unreachable_header_t *) (buffer + offset), &req_udp_header) == SUCCESS) {
 			_stat = FAILURE;
 			break;
 		}
