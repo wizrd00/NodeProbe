@@ -73,7 +73,7 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
 		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
-		timeout -= CONVERT_TIMESPEC(start_tp) - CONVERT_TIMESPEC(now_tp);
+		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(now_tp);
 		if (timeout < 0)
 			break;
 		switch (poll(&pfd, (nfds_t) 1, timeout)) {
