@@ -56,10 +56,9 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 	CHECK_NOTEQUAL(buffer, NULL, ERRALOC, "calloc() failed to allocate %zu bytes; %s", context->mtu_size, strerror(errno));
 	uint32_t src_ip = ((uint32_t) context->src_ip[0] | (uint32_t) context->src_ip[1] << 8 | (uint32_t) context->src_ip[2] << 16 | (uint32_t) context->src_ip[3] << 24);
 	uint32_t dst_ip = ((uint32_t) context->dst_ip[0] | (uint32_t) context->dst_ip[1] << 8 | (uint32_t) context->dst_ip[2] << 16 | (uint32_t) context->dst_ip[3] << 24);
-	ethernet_header_t res_eth_header, req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
-	ipv4_header_t res_ip_header, req_ip_header = IPV4_DEFAULT_HEADER(UDPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_UDP, src_ip, dst_ip);
+	ethernet_header_t req_eth_header = ETHERNET_DEFAULT_HEADER(context->src_mac, context->dst_mac);
+	ipv4_header_t req_ip_header = IPV4_DEFAULT_HEADER(UDPMAN_FRAME_SIZE - sizeof(ethernet_header_t), PROTO_UDP, src_ip, dst_ip);
 	udp_header_t req_udp_header = UDP_DEFAULT_HEADER(context->src_port, context->dst_port, sizeof(udp_header_t));
-	icmpv4_unreachable_header_t res_icmp_header;
 	ipv4_pseudo_header_t pseudo_header = IPV4_PSEUDO_DEFAULT_HEADER(src_ip, dst_ip, PROTO_UDP, sizeof(udp_header_t));
 	struct sockaddr_ll req_addr = UDP_CHECK_REQUEST_DEFAULT_ADDR();
 	struct timespec start_tp, now_tp;
@@ -103,14 +102,12 @@ status_t udpman_udp_request(udpman_context_t *restrict context)
 		offset += sizeof(ethernet_header_t);
 		if ((size_t) recvfrom_ret < sizeof(ipv4_header_t))
 			continue;
-		memcpy((void *) &res_ip_header, (void *) (buffer + offset), sizeof(ipv4_header_t));
 		if (!CHECK_INCLUDE_ICMP_MESSAGE((ipv4_header_t *) (buffer + offset)))
 			continue;
 		recvfrom_ret -= (ssize_t) sizeof(ipv4_header_t);
 		offset += sizeof(ipv4_header_t);
 		if ((size_t) recvfrom_ret < sizeof(icmpv4_unreachable_header_t))
 			continue;
-		memcpy((void *) &res_icmp_header, (void *) (buffer + offset), sizeof(icmpv4_unreachable_header_t));
 		if (check_icmp_response((icmpv4_unreachable_header_t *) (buffer + offset), &req_udp_header) == SUCCESS) {
 			_stat = FAILURE;
 			break;
