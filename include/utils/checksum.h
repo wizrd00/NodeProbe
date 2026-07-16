@@ -6,17 +6,17 @@
 
 static inline uint16_t checksum(uint8_t *data, size_t size)
 {
-	uint16_t chksum = 0;
-	uint64_t tmp = 0;
-	for (size_t i = 0; i < size / 2; i++)
-		tmp += ((uint64_t) data[i * 2] << 8) + (uint64_t) data[i * 2 + 1];
-	if (size % 2 != 0)
-		tmp += (uint64_t) (data[size - 1] << 8);
-	while (tmp > 0) {
-		chksum += (uint64_t) (tmp & 0xffff);
-		tmp >>= 16;
+	register uint32_t result = 0;
+	while (size > 1) {
+		result += (((uint16_t) *data) << 8) | ((uint16_t) *(data + 1));
+		data += 2;
+		size -= 2;
 	}
-	return (~chksum);
+	if (size == 1)
+		result += ((uint16_t) *data) << 8;
+	while ((result >> 16) != 0)
+		result = (result >> 16) + (result & 0xffff);
+	return ~((uint16_t) result);
 }
 
 #endif
