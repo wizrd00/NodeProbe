@@ -79,9 +79,9 @@ void logging(const char *level, const char *mod, const char *pos, const char *fm
 	vsnprintf(msg, sizeof(msg), fmt, ap);
 	sstrncpy(logmsg.msg, msg, MSGSIZE);
 	va_end(ap);
-	logc.logcount++;
 	if (sem_wait(&logc.sem) == -1)
 		return;
+	logc.logcount++;
 	append_log(logmsg);
 	if (sem_post(&logc.sem) == -1)
 		fprintf(stderr, "[CRITICAL ERROR] sem_post() failed\n");
