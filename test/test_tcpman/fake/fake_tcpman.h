@@ -2,16 +2,16 @@
 #define NODEPROBE_TCPMAN_H
 
 #include "types.h"
+#include "contexts.h"
 #include "utils/checksum.h"
+#include "utils/calc.h"
+#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <time.h>
 #include <fake_poll.h>
 #include <fake_socket.h>
-#include <arpa/inet.h>
-#include <net/ethernet.h>
-#include <linux/if_packet.h>
 
-#define TCPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(tcp_header_t)
+#define TCPMAN_FRAME_SIZE (sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(tcp_header_t))
 
 #define TCP_SYNC_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\
@@ -32,7 +32,6 @@ typedef struct {
 	unsigned char dst_ip[4];
 	unsigned short src_port;
 	unsigned short dst_port;
-
 } tcpman_context_t;
 
 status_t tcpman_create_context(tcpman_context_t *restrict context);

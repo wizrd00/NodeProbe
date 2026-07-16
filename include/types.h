@@ -4,6 +4,7 @@
 #include "stats.h"
 #include "checks.h"
 #include "headers.h"
+#include "contexts.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>

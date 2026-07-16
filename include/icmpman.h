@@ -2,17 +2,14 @@
 #define NODEPROBE_ICMPMAP_H
 
 #include "types.h"
+#include "contexts.h"
 #include "utils/checksum.h"
 #include "utils/calc.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 #include <poll.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
-#include <net/ethernet.h>
-#include <linux/if_packet.h>
 
 #define ICMPMAN_FRAME_SIZE (sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(icmpv4_echo_header_t))
 

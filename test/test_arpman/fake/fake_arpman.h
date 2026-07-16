@@ -2,13 +2,11 @@
 #define NODEPROBE_ARPMAN_H
 
 #include "types.h"
+#include "contexts.h"
 #include <string.h>
-#include <unistd.h>
+#include <time.h>
 #include <fake_poll.h>
 #include <fake_socket.h>
-#include <arpa/inet.h>
-#include <net/ethernet.h>
-#include <linux/if_packet.h>
 
 #define ARP_REQUEST_DEFAULT_ADDR() {\
 		.sll_family = AF_PACKET,\

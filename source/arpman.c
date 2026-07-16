@@ -12,22 +12,14 @@ static status_t check_arp_response(arp_inet_header_t *res, arp_inet_header_t *re
 status_t arpman_create_context(arpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
-	struct sockaddr_ll addr = {
-		.sll_family = AF_PACKET,
-		.sll_protocol = htons(ETH_P_ARP),
-		.sll_ifindex = context->ifindex
-	};
-	int tmp_sockfd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ARP));
-	CHECK_NOTEQUAL(tmp_sockfd, -1, ERRSOCK, "socket() failed to create socket; %s", strerror(errno));
-	CHECK_NOTEQUAL_CLOSE(bind(tmp_sockfd, (struct sockaddr *) &addr, sizeof(struct sockaddr_ll)), -1, ERRBIND, tmp_sockfd, "bind() failed to bind to socket with fd = %d; %s", tmp_sockfd, strerror(errno));
-	context->sockfd = tmp_sockfd;
+	CREATE_CONTEXT(context, SOCK_DGRAM, ETH_P_ARP);
 	return _stat;
 }
 
 status_t arpman_delete_context(arpman_context_t *restrict context)
 {
 	status_t _stat = SUCCESS;
-	CHECK_NOTEQUAL(close(context->sockfd), -1, ERRCLOS, "close() failed to close socket with fd = %d; %s", context->sockfd, strerror(errno));
+	DELETE_CONTEXT(context);
 	return _stat;
 }
 
