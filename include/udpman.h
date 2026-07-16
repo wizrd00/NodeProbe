@@ -12,7 +12,7 @@
 #include <net/ethernet.h>
 #include <linux/if_packet.h>
 
-#define UDPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(udp_header_t)
+#define UDPMAN_FRAME_SIZE (sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(udp_header_t))
 
 #define UDP_CHECK_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\

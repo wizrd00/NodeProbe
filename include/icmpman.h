@@ -13,7 +13,7 @@
 #include <net/ethernet.h>
 #include <linux/if_packet.h>
 
-#define ICMPMAN_FRAME_SIZE sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(icmpv4_echo_header_t)
+#define ICMPMAN_FRAME_SIZE (sizeof(ethernet_header_t) + sizeof(ipv4_header_t) + sizeof(icmpv4_echo_header_t))
 
 #define ICMPV4_ECHO_REQUEST_DEFAULT_ADDR() {\
 	.sll_family = AF_PACKET,\
