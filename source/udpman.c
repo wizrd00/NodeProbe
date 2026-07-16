@@ -1,18 +1,5 @@
 #include "udpman.h"
 
-static uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
-{
-	return checksum((uint8_t *) ip, sizeof(ipv4_header_t));
-}
-
-static uint16_t calc_udp_checksum(udp_header_t *udp, ipv4_pseudo_header_t *pseudo)
-{
-	uint8_t data[sizeof(udp_header_t) + sizeof(ipv4_pseudo_header_t)];
-	memcpy((void *) data, (void *) udp, sizeof(udp_header_t));
-	memcpy((void *) (data + sizeof(udp_header_t)), (void *) pseudo, sizeof(ipv4_pseudo_header_t));
-	return checksum(data, sizeof(data));
-}
-
 static status_t check_icmp_response(icmpv4_unreachable_header_t *res_icmp, udp_header_t *req_udp)
 {
 	status_t _stat = SUCCESS;

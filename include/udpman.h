@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "utils/checksum.h"
+#include "utils/calc.h"
 #include <string.h>
 #include <time.h>
 #include <unistd.h>

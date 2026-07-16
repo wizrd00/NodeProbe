@@ -1,15 +1,5 @@
 #include "icmpman.h"
 
-static uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
-{
-	return checksum((uint8_t *) ip, sizeof(ipv4_header_t));
-}
-
-static uint16_t calc_icmpv4_checksum(icmpv4_echo_header_t *icmp)
-{
-	return checksum((uint8_t *) icmp, sizeof(icmpv4_echo_header_t));
-}
-
 static status_t check_echo_response(icmpv4_echo_header_t *res_icmp, icmpv4_echo_header_t *req_icmp)
 {
 	status_t _stat = SUCCESS;

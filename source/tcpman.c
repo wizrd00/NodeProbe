@@ -1,18 +1,5 @@
 #include "tcpman.h"
 
-static uint16_t calc_ipv4_checksum(ipv4_header_t *ip)
-{
-	return checksum((uint8_t *) ip, sizeof(ipv4_header_t));
-}
-
-static uint16_t calc_tcp_checksum(tcp_header_t *tcp, ipv4_pseudo_header_t *pseudo)
-{
-	uint8_t data[sizeof(tcp_header_t) + sizeof(ipv4_pseudo_header_t)];
-	memcpy((void *) data, (void *) tcp, sizeof(tcp_header_t));
-	memcpy((void *) (data + sizeof(tcp_header_t)), (void *) pseudo, sizeof(ipv4_pseudo_header_t));
-	return checksum(data, sizeof(data));
-}
-
 static status_t check_sync_response(tcp_header_t *res_tcp, tcp_header_t *req_tcp)
 {
 	status_t _stat = SUCCESS;
