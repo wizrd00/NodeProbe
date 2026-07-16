@@ -11,6 +11,6 @@
 #include <errno.h>
 #include <time.h>
 
-#define CONVERT_TIMESPEC(_tp) ((int) _tp.tv_sec + (int) ((unsigned long) _tp.tv_nsec / 1000000))
+#define CONVERT_TIMESPEC(_tp) ((int) _tp.tv_sec * 1000 + (int) ((unsigned long) _tp.tv_nsec / 1000000))
 
 #endif

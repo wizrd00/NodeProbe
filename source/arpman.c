@@ -48,7 +48,7 @@ status_t arpman_mac_request(arpman_context_t *restrict context, uint8_t *mac)
 	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
 		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
-		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp);
+		timeout = context->timeout - (CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp));
 		if (timeout < 0)
 			break;
 		switch (poll(&pfd, (nfds_t) 1, timeout)) {

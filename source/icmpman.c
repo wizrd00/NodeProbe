@@ -70,10 +70,10 @@ status_t icmpman_echo_request(icmpman_context_t *restrict context)
 	ssize_t sendto_ret = sendto(context->sockfd, (void *) frame, ICMPMAN_FRAME_SIZE, 0, (struct sockaddr *) &req_addr, sizeof(struct sockaddr_ll));
 	CHECK_NOTEQUAL_FREE(sendto_ret, (ssize_t) -1, ERRSEND, buffer, "sendto() failed and returned -1 on socket with fd = %d; %s", context->sockfd, strerror(errno));
 	CHECK_EQUAL_FREE((size_t) sendto_ret, ICMPMAN_FRAME_SIZE, ERRSEND, buffer, "sendto() failed and sent %zu bytes instead of %zu bytes", (size_t) sendto_ret, ICMPMAN_FRAME_SIZE);
-	CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
+	CHECK_NOTEQUAL_FREE(clock_gettime(CLOCK_REALTIME, &start_tp), -1, ERRTIME, buffer, "clock_gettime() failed to get time; %s", strerror(errno));
 	while (1) {
-		CHECK_NOTEQUAL(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, "clock_gettime() failed to get time; %s", strerror(errno));
-		timeout -= CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(now_tp);
+		CHECK_NOTEQUAL_FREE(clock_gettime(CLOCK_REALTIME, &now_tp), -1, ERRTIME, buffer, "clock_gettime() failed to get time; %s", strerror(errno));
+		timeout = context->timeout - (CONVERT_TIMESPEC(now_tp) - CONVERT_TIMESPEC(start_tp));
 		if (timeout < 0)
 			break;
 		switch (poll(&pfd, (nfds_t) 1, timeout)) {
