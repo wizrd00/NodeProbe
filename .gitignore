@@ -1,0 +1,11 @@
+*.swp
+*.o
+*.bin
+*.elf
+logfile*
+__pycache__/
+.venv/
+build/
+binary/
+tmp/
+nodeprobe-*.json

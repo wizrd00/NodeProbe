@@ -1,0 +1,256 @@
+/* NodeProbe-TUI — flat, quiet, Wireshark-like panes */
+
+Screen {
+	background: $background;
+}
+
+Header {
+	background: $panel;
+	color: $foreground;
+}
+
+Footer {
+	background: $panel;
+}
+
+.panel {
+	background: $surface;
+	border: round $primary 40%;
+	border-title-color: $primary;
+	border-title-style: bold;
+	padding: 0 1;
+}
+
+.panel:focus-within {
+	border: round $primary;
+}
+
+.muted {
+	color: $foreground 55%;
+}
+
+DataTable {
+	background: $surface;
+	scrollbar-size-vertical: 1;
+}
+
+DataTable > .datatable--header {
+	background: $panel;
+	color: $foreground;
+	text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+	background: $primary 45%;
+	color: $foreground;
+	text-style: none;
+}
+
+DataTable:focus > .datatable--cursor {
+	background: $primary;
+	color: $background;
+}
+
+DataTable > .datatable--even-row {
+	background: $surface;
+}
+
+DataTable > .datatable--odd-row {
+	background: $surface-lighten-1 40%;
+}
+
+Input {
+	background: $panel;
+	border: none;
+	height: 1;
+	padding: 0 1;
+}
+
+Input:focus {
+	background: $primary 25%;
+	border: none;
+}
+
+Input > .input--placeholder {
+	color: $foreground 45%;
+}
+
+Tree, RichLog {
+	overflow-x: hidden;
+	scrollbar-size: 1 1;
+}
+
+Button {
+	min-width: 16;
+}
+
+/* ------------------------------------------------------------------ setup */
+
+Screen {
+	align-horizontal: center;
+}
+
+#setup {
+	width: 112;
+	max-width: 100%;
+	height: 1fr;
+	padding: 1 0 0 0;
+}
+
+#iface-panel {
+	height: auto;
+	max-height: 10;
+}
+
+#ifaces {
+	height: auto;
+	max-height: 7;
+}
+
+#target-panel {
+	height: auto;
+}
+
+#range-hint {
+	height: 1;
+	padding: 0 1;
+}
+
+#probe-panel {
+	height: auto;
+}
+
+#ports-tabs {
+	height: auto;
+}
+
+TabPane {
+	padding: 0;
+}
+
+.port-row {
+	height: 9;
+}
+
+PortList {
+	width: 1fr;
+	height: 1fr;
+	background: $surface;
+	border: none;
+	padding: 0;
+}
+
+.port-side {
+	width: 34;
+	height: 1fr;
+	padding-left: 2;
+}
+
+.port-side Button {
+	margin-bottom: 1;
+	min-width: 14;
+	background: $panel;
+}
+
+#setup-actions {
+	height: 3;
+	align: right middle;
+}
+
+#setup-warning {
+	width: 1fr;
+	height: 1;
+	content-align: left middle;
+}
+
+#start {
+	width: 20;
+}
+
+/* ------------------------------------------------------------------- scan */
+
+#scan {
+	height: 1fr;
+	padding: 0 1;
+}
+
+#filter-bar {
+	height: 1;
+	margin: 1 0 1 0;
+}
+
+#filter {
+	width: 1fr;
+}
+
+#filter-info {
+	width: auto;
+	height: 1;
+	padding: 0 2;
+	color: $foreground 60%;
+}
+
+#hosts {
+	height: 1fr;
+	border: round $primary 40%;
+	border-title-color: $primary;
+	border-title-style: bold;
+}
+
+#hosts:focus {
+	border: round $primary;
+}
+
+#lower {
+	height: 40%;
+	min-height: 10;
+}
+
+#details {
+	width: 1fr;
+	background: $surface;
+	border: round $primary 40%;
+	border-title-color: $primary;
+	border-title-style: bold;
+	padding: 0 1;
+}
+
+#details:focus {
+	border: round $primary;
+}
+
+#events {
+	width: 1fr;
+	background: $surface;
+	border: round $primary 40%;
+	border-title-color: $primary;
+	border-title-style: bold;
+	padding: 0 1;
+}
+
+#events:focus {
+	border: round $primary;
+}
+
+#status {
+	height: 1;
+	background: $panel;
+	padding: 0 1;
+}
+
+#scan-state {
+	width: 16;
+}
+
+#scan-progress {
+	width: 40;
+	padding: 0 2 0 0;
+}
+
+#scan-counts {
+	width: 1fr;
+}
+
+#scan-time {
+	width: auto;
+}
