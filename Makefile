@@ -1,4 +1,4 @@
-CC = pcc
+CC = clang
 
 LIBC := $(shell ldd --version 2>&1 | grep -qi musl && echo musl || echo glibc)
 
@@ -7,34 +7,17 @@ INC_DIR := include
 BIN_DIR := binary
 LIB_DIR := library
 
-ifeq ($(LIBC), musl)
-NODEPROBE := libnodeprobe-musl.so
-else ifeq ($(LIBC), glibc)
 NODEPROBE := libnodeprobe-glibc.so
-else
-$(error unsupported libc : $(LIBC))
-endif
 
 LOGMAN_MACROS := -DLOG_WARNN -DLOG_ERROR
 DEBUG_LOGMAN_MACROS := -DLOG_TRACE -DLOG_DEBUG -DLOG_WARNN -DLOG_ERROR
 
-ifeq ($(CC), pcc)
-CFLAGS := -std=c99 -O3 -fPIC -shared -Wc,-Werror=implicit-function-declaration,-Werror=missing-prototypes,-Werror=pointer-sign,-Werror=sign-compare,-Werror=strict-prototypes,-Werror=shadow -pthread
-ifeq ($(wildcard $(LIB_DIR)/*), $())
-LIB_FLAGS :=
-else
-LIB_FLAGS := -Wl,--library-path=$(LIB_DIR),-rpath=$(LIB_DIR)
-endif
-else ifeq ($(CC), gcc)
 SPECIAL_OPTS = -DARPHRD_ETHER=1
-CFLAGS := -std=c99 -O3 -fPIC -shared -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wcast-align -Wconversion -Wsign-conversion -Wshadow -Wno-switch -pthread $(SPECIAL_OPTS)
+CFLAGS := -std=c99 -O3 -fPIC -Werror -Wall -Wextra -Wpedantic -Wno-switch -pthread $(SPECIAL_OPTS)
 ifeq ($(wildcard $(LIB_DIR)/*), $())
 LIG_FLAGS :=
 else
-LIB_FLAGS := -L$(LIB_DIR) -Wl,-rpath=$(LIB_DIR)
-endif
-else
-$(error unsupported compiler : $(CC))
+LIB_FLAGS := -shared -L$(LIB_DIR) -Wl,-rpath=$(LIB_DIR)
 endif
 
 DEBUG_CFLAGS := $(CFLAGS) -g
@@ -62,7 +45,7 @@ $(BIN_DIR) :
 
 $(BIN_DIR)/%.o : $(SRC_DIR)/%.c $(INC_DIR)/%.h
 	@/usr/bin/echo -e $(POINTER_SYM) "\e[93mcompiling module" $< "\e[0m"
-	$(CC) -c $(CFLAGS) $(LIB_FLAGS) $(INCLUDE_FLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDE_FLAGS) -o $@ $<
 
 memcheck : $(NODEPROBE)
 	@echo start checking test.elf for any memory bug
