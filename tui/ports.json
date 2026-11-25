@@ -1,0 +1,42 @@
+{
+        "TCP": [
+                {
+                        "port": 21,
+                        "service": "FTP"
+                },
+                {
+                        "port": 22,
+                        "service": "SSH"
+                },
+                {
+                        "port": 23,
+                        "service": "TELNET"
+                },
+                {
+                        "port": 80,
+                        "service": "HTTP"
+                },
+                {
+                        "port": 443,
+                        "service": "HTTPS"
+                }
+        ],
+        "UDP": [
+                {
+                        "port": 53,
+                        "service": "DNS"
+                },
+                {
+                        "port": 67,
+                        "service": "DHCP"
+                },
+                {
+                        "port": 68,
+                        "service": "DHCP"
+                },
+                {
+                        "port": 123,
+                        "service": "NTP"
+                }
+        ]
+}
