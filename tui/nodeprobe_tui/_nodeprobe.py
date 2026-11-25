@@ -1,7 +1,7 @@
 from ctypes import *
-from _structs import *
-from _constants import *
-from _tools import *
+from ._structs import *
+from ._constants import *
+from ._tools import *
 
 # Creating this interface according to NodeProbe Documentation at link https://github.com/wizrd00/NodeProbe/blob/main/assets/doc.md
 

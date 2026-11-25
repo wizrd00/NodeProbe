@@ -1,0 +1,4 @@
+include LICENSE README.md Makefile
+recursive-include source *.c
+recursive-include include *.h
+recursive-include tui *.py *.css *.json

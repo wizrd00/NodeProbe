@@ -3,7 +3,7 @@ from ctypes import *
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from subprocess import getoutput
+import os
 import sys
 
 Mac = c_ubyte * 6
@@ -70,7 +70,7 @@ class NodeProbeResult :
 		text = [
 			f"host_ip = {self.host_ip}",
 			f"host_mac = {self.mac_text}",
-			f"the host {"is" if (self.pingable) else "is not"} pingable",
+			"ping was not tested" if (self.pingable is None) else ("the host is pingable" if (self.pingable) else "the host is not pingable"),
 			f"open_tcp_ports = {self.open_tcp_ports}",
 			f"open_udp_ports = {self.open_udp_ports}",
 			f"arpman_time = {self.arpman_time}",
@@ -158,12 +158,25 @@ class udpman_context_t(Structure) :
 	]
 
 
+def find_library() -> Path | None :
+	# 1. NODEPROBE_LIB  2. lib/ inside the package (installed wheel)  3. the repository root (checkout built with `make`)
+	here = Path(__file__).resolve().parent
+	name = "libnodeprobe-glibc.so"
+	dirs = [here / "lib", here.parents[1]]
+	if (os.environ.get("NODEPROBE_LIB")) :
+		return Path(os.environ["NODEPROBE_LIB"])
+	for directory in dirs :
+		if ((directory / name).is_file()) :
+			return directory / name
+	return None
+
 def load_library() :
-	libc = getoutput("ldd --version 2>&1 | grep -qi musl && echo musl || echo glibc")
-	path = Path(__file__).resolve().parent / "library" / f"libnodeprobe-{libc}.so"
+	path = find_library()
+	if (path is None) :
+		sys.exit("libnodeprobe was not found\nbuild it with `make` in the repository root, reinstall the package, or set NODEPROBE_LIB=/path/to/libnodeprobe.so")
 	try :
 		return cdll.LoadLibrary(str(path))
 	except OSError as error :
-		sys.exit(f"unable to load {path}\n{error}\nbuild NodeProbe ({libc}) and copy the library into the library/ directory")
+		sys.exit(f"unable to load {path}\n{error}")
 
 lib = load_library()

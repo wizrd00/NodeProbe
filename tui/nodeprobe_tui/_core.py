@@ -1,8 +1,8 @@
 from ctypes import *
-from _structs import *
-from _constants import *
-from _tools import *
-from _nodeprobe import *
+from ._structs import *
+from ._constants import *
+from ._tools import *
+from ._nodeprobe import *
 from collections import deque
 import threading # dispite of GIL existanse, most of libnodeprobe operations are I/O-bound. So threading library will be a good choice
 import random

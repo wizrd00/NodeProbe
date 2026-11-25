@@ -1,6 +1,6 @@
-from _structs import *
-from _constants import *
-from _exceptions import NodeProbeError
+from ._structs import *
+from ._constants import *
+from ._exceptions import NodeProbeError
 from collections.abc import Iterable
 from ctypes import c_int, c_size_t, c_ushort
 from functools import cache

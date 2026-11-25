@@ -1,14 +1,23 @@
-# NodeProbe-TUI
+# NodeProbe TUI
 
-A Textual interface for the [NodeProbe](https://github.com/wizrd00/NodeProbe) C library — ARP host discovery, ICMP echo, TCP SYN and UDP service probing from the terminal.
+A Textual interface for NodeProbe: ARP host discovery, ICMP echo, TCP SYN and UDP service probing from the terminal.
 
-## Run
+## Install
 
 ```sh
-pip install -r requirements.txt      # Python 3.12+
-cp ../nodeprobe/libnodeprobe-glibc.so library/   # or libnodeprobe-musl.so on musl systems
-sudo python3 _tui.py                 # raw sockets need root or CAP_NET_RAW
+pipx install git+https://github.com/wizrd00/NodeProbe.git   # needs make, a C compiler and Python 3.12+
+sudo "$(command -v nodeprobe)"                               # raw sockets need root or CAP_NET_RAW
 ```
+
+From a checkout:
+
+```sh
+make                              # builds libnodeprobe-glibc.so in the repository root
+pip install -r tui/requirements.txt   # or: pip install textual psutil
+cd tui && sudo python3 -m nodeprobe_tui
+```
+
+`NODEPROBE_LIB=/path/to/libnodeprobe-glibc.so` overrides the library lookup.
 
 ## Keys
 

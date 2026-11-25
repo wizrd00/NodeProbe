@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nodeprobe"
+version = "0.1.0"
+description = "ARP, ICMP, TCP and UDP host discovery: a thread-safe C99 library with a Textual TUI"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Arash Ghaffari" }]
+keywords = ["network", "arp", "host-discovery", "scanner", "tui", "textual"]
+classifiers = [
+	"Environment :: Console",
+	"Operating System :: POSIX :: Linux",
+	"Programming Language :: C",
+	"Programming Language :: Python :: 3",
+	"Topic :: System :: Networking",
+]
+dependencies = [
+	"textual>=8.0",
+	"psutil",
+]
+
+[project.urls]
+Homepage = "https://github.com/wizrd00/NodeProbe"
+Blog = "https://wizrd00.github.io/posts/projects/nodeprobe/"
+
+[project.scripts]
+nodeprobe = "nodeprobe_tui._tui:main"
+
+[tool.setuptools]
+package-dir = { "" = "tui" }
+packages = ["nodeprobe_tui"]
+
+[tool.setuptools.package-data]
+nodeprobe_tui = ["style.css", "ports.json", "lib/*.so"]

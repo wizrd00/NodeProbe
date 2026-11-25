@@ -1,8 +1,9 @@
-from _structs import *
-from _constants import *
-from _tools import *
-from _menus import *
+from ._structs import *
+from ._constants import *
+from ._tools import *
+from ._menus import *
 from itertools import cycle
+import sys
 from textual.app import App
 from textual.binding import Binding
 from textual.theme import Theme
@@ -64,6 +65,9 @@ class NodeProbeTUI(App) :
 		self.theme = next(self.themes)
 
 
-if __name__ == "__main__" :
-	app = NodeProbeTUI()
-	app.run()
+def main() -> None :
+	if (len(sys.argv) > 1 and sys.argv[1] in ("-V", "--version")) :
+		from . import __version__
+		print(f"nodeprobe {__version__}")
+		return
+	NodeProbeTUI().run()
