@@ -1,6 +1,7 @@
 *.swp
 *.o
 *.bin
+*.so
 *.elf
 logfile*
 build/
