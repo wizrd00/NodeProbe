@@ -7,26 +7,20 @@ NodeProbe is used by including a single header and linking against the shared li
 ```
 
 ### How to link it?
-It is possible to build the library with *pcc* or *gcc*.  
-It also possible to link the library with *musl* or *glibc*.  
+It is possible to build the library with *clang* or *gcc*.  
 The Makefile detects the libc automatically.
 
 The second part of library name indicates its libc.  
 if the name is *libnodeprobe-musl.so* it means you can only use it with musl libc.  
 The same think happens to *libnodeprobe-glibc.so*
 
-#### Linking with *pcc*
-```sh
-pcc main.c -Wl,--library-path=./,--library=nodeprobe-musl,-rpath=./ -o main
-# or if the name is libnodeprobe-glibc.so
-pcc main.c -Wl,--library-path=./,--library=nodeprobe-glibc,-rpath=./ -o main
-```
+Note : THE PROJECT NO LONGER SUPPORTS *musl*.
 
-#### Linking with *gcc*
+#### Linking with *clang* or *gcc"
 ```sh
-gcc main.c -L./ -lnodeprobe-musl -Wl,-rpath=./ -o main
+clang main.c -L./ -lnodeprobe-musl -Wl,-rpath=./ -o main
 # or if the name is libnodeprobe-glibc.so
-gcc main.c -L./ -lnodeprobe-glibc -Wl,-rpath=./ -o main
+clang main.c -L./ -lnodeprobe-glibc -Wl,-rpath=./ -o main
 ```
 
 **All functions require `CAP_NET_RAW` or root privileges at runtime, since they operate on raw `AF_PACKET` sockets.**
